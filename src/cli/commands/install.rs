@@ -1,7 +1,14 @@
+//! `reporinse install` / `reporinse uninstall`: resolve the module selection against the registry and hand it
+//! to the provider's installer. Only providers with a real installer are accepted (today: git).
+
+use std::io::{BufRead, IsTerminal};
+
 use clap::Args;
 
-use super::not_implemented;
 use crate::cli::output::Output;
+use crate::core::integration::{InstallActionKind, InstallRequest, InstallResult, InstallScope};
+use crate::core::model::{Availability, RiskLevel, RuleMode, exit_codes};
+use crate::core::registry::RuleRegistry;
 
 #[derive(Debug, Args)]
 pub struct Selection {
@@ -35,6 +42,9 @@ pub struct Selection {
 pub struct InstallArgs {
     #[command(flatten)]
     pub selection: Selection,
+    /// Overwrite RepoRinse hooks that changed since they were installed.
+    #[arg(long)]
+    pub force: bool,
 }
 
 #[derive(Debug, Args)]
@@ -46,10 +56,306 @@ pub struct UninstallArgs {
     pub force: bool,
 }
 
-pub fn run_install(_args: &InstallArgs, out: &mut Output) -> i32 {
-    not_implemented(out, "install")
+fn parse_scope(s: &str) -> Option<InstallScope> {
+    match s {
+        "repo" => Some(InstallScope::Repo),
+        "user" | "global" => Some(InstallScope::User),
+        _ => None,
+    }
 }
 
-pub fn run_uninstall(_args: &UninstallArgs, out: &mut Output) -> i32 {
-    not_implemented(out, "uninstall")
+/// Modules that `--all` picks for a provider: implemented or experimental, triggered by that provider, and not
+/// a high-risk rule whose default mode modifies files.
+pub fn all_for_provider(registry: &RuleRegistry, provider: &str) -> Vec<String> {
+    registry
+        .all()
+        .map(|r| r.metadata())
+        .filter(|m| m.providers.contains(&provider))
+        .filter(|m| m.availability != Availability::Planned)
+        .filter(|m| !(m.risk == RiskLevel::High && m.default_mode == RuleMode::Fix))
+        .map(|m| m.id.to_string())
+        .collect()
+}
+
+/// Resolves `--all/--only/--except` to module ids. `default_all`: what an empty selection means.
+fn resolve_modules(
+    sel: &Selection,
+    registry: &RuleRegistry,
+    provider: &str,
+    default_all: bool,
+) -> Result<Vec<String>, String> {
+    for id in sel.only.iter().chain(&sel.except) {
+        let Some(rule) = registry.find(id) else {
+            return Err(format!(
+                "unknown module '{id}'. Run 'reporinse modules list' to see the available ones."
+            ));
+        };
+        if !rule.metadata().providers.contains(&provider) {
+            return Err(format!(
+                "module '{id}' does not run on provider '{provider}' (providers: {})",
+                rule.metadata().providers.join(", ")
+            ));
+        }
+    }
+    if !sel.only.is_empty() {
+        let mut ids = Vec::new();
+        for id in &sel.only {
+            if !ids.contains(id) {
+                ids.push(id.clone());
+            }
+        }
+        return Ok(ids);
+    }
+    if sel.all || default_all {
+        return Ok(all_for_provider(registry, provider)
+            .into_iter()
+            .filter(|id| !sel.except.contains(id))
+            .collect());
+    }
+    Ok(Vec::new())
+}
+
+/// Common checks; Err is the exit code after printing the problem.
+fn prepare(
+    sel: &Selection,
+    out: &mut Output,
+) -> Result<(InstallScope, Box<dyn crate::core::integration::Installer>), i32> {
+    if sel.interactive {
+        if !std::io::stdin().is_terminal() {
+            out.error("--interactive needs a terminal; use --all or --only <ids> instead");
+            return Err(exit_codes::USAGE);
+        }
+        out.error(
+            "interactive selection is not implemented in this build yet; use --all or --only <ids>",
+        );
+        return Err(exit_codes::NOT_IMPLEMENTED);
+    }
+    let Some(scope) = parse_scope(&sel.scope) else {
+        out.error(format!(
+            "unknown scope '{}': use repo or user (alias global)",
+            sel.scope
+        ));
+        return Err(exit_codes::USAGE);
+    };
+    let unsupported: Vec<&String> = sel
+        .provider
+        .iter()
+        .filter(|p| crate::integrations::find_installer(p).is_none())
+        .collect();
+    if let Some(p) = unsupported.first() {
+        let known = crate::integrations::PROVIDERS.contains(&p.to_lowercase().as_str());
+        out.error(if known {
+            format!(
+                "provider '{p}' is not supported by this build yet; only 'git' can be installed"
+            )
+        } else {
+            format!(
+                "unknown provider '{p}' (known: {})",
+                crate::integrations::PROVIDERS.join(", ")
+            )
+        });
+        return Err(if known {
+            exit_codes::NOT_IMPLEMENTED
+        } else {
+            exit_codes::USAGE
+        });
+    }
+    if sel.provider.len() != 1 {
+        out.error("pass exactly one provider (--provider git)");
+        return Err(exit_codes::USAGE);
+    }
+    let installer = crate::integrations::find_installer(&sel.provider[0]).expect("checked above");
+    if !installer.supported_scopes().contains(&scope) {
+        out.error(format!(
+            "provider '{}' does not support scope '{}'",
+            installer.provider(),
+            sel.scope
+        ));
+        return Err(exit_codes::USAGE);
+    }
+    Ok((scope, installer))
+}
+
+fn verb(kind: InstallActionKind) -> &'static str {
+    match kind {
+        InstallActionKind::CreateFile => "create",
+        InstallActionKind::UpdateFile => "update",
+        InstallActionKind::DeleteFile => "delete",
+        InstallActionKind::RestoreFile => "restore",
+        InstallActionKind::SetConfig => "set",
+        InstallActionKind::UnsetConfig => "unset",
+        InstallActionKind::MergeJson => "merge",
+        InstallActionKind::Skip => "keep",
+    }
+}
+
+fn report(out: &mut Output, result: &InstallResult, dry_run: bool, what: &str) -> i32 {
+    if out.json {
+        out.print_json(result);
+    } else {
+        if dry_run {
+            out.line(out.bold(&format!("{what} plan (dry run, nothing is written):")));
+        }
+        for a in &result.actions {
+            let v = format!("{:<8}", verb(a.kind));
+            let v = if a.kind == InstallActionKind::Skip {
+                out.dim(&v)
+            } else {
+                out.green(&v)
+            };
+            out.line(format!("  {v}{}  {}", a.target, out.dim(&a.description)));
+        }
+        for c in &result.conflicts {
+            out.error(c);
+        }
+        for n in &result.notes {
+            out.line(format!("note: {n}"));
+        }
+        if result.succeeded() && !dry_run {
+            out.line(out.green(&format!("{what} done.")));
+        }
+    }
+    if result.succeeded() {
+        exit_codes::OK
+    } else {
+        exit_codes::CONFLICT
+    }
+}
+
+fn request(
+    scope: InstallScope,
+    modules: Vec<String>,
+    dry_run: bool,
+    force: bool,
+) -> Result<InstallRequest, String> {
+    let root =
+        std::env::current_dir().map_err(|e| format!("cannot read the current directory: {e}"))?;
+    Ok(InstallRequest {
+        scope,
+        root,
+        modules,
+        dry_run,
+        force,
+    })
+}
+
+pub fn run_install(args: &InstallArgs, out: &mut Output) -> i32 {
+    let sel = &args.selection;
+    let (scope, installer) = match prepare(sel, out) {
+        Ok(v) => v,
+        Err(code) => return code,
+    };
+    let registry = crate::modules::registry();
+    let modules = match resolve_modules(sel, &registry, installer.provider(), true) {
+        Ok(m) => m,
+        Err(e) => {
+            out.error(e);
+            return exit_codes::USAGE;
+        }
+    };
+    if modules.is_empty() {
+        out.error("no module selected; use --all or --only <ids>");
+        return exit_codes::USAGE;
+    }
+    let req = match request(scope, modules, sel.dry_run, args.force) {
+        Ok(r) => r,
+        Err(e) => {
+            out.error(e);
+            return exit_codes::INTERNAL;
+        }
+    };
+    let result = installer.install(&req);
+    report(out, &result, sel.dry_run, "install")
+}
+
+/// `--force` deletes files a person may have edited: confirm unless `--yes`.
+fn confirm_force(out: &mut Output) -> bool {
+    if !std::io::stdin().is_terminal() {
+        out.error("--force without --yes needs a terminal to confirm; add --yes to proceed");
+        return false;
+    }
+    out.raw_err("Remove RepoRinse files even if they were edited since install? [y/N] ");
+    let mut answer = String::new();
+    let _ = std::io::stdin().lock().read_line(&mut answer);
+    matches!(answer.trim(), "y" | "Y" | "yes")
+}
+
+pub fn run_uninstall(args: &UninstallArgs, out: &mut Output) -> i32 {
+    let sel = &args.selection;
+    let (scope, installer) = match prepare(sel, out) {
+        Ok(v) => v,
+        Err(code) => return code,
+    };
+    let registry = crate::modules::registry();
+    // `--only` removes just those modules; nothing or `--all` removes everything RepoRinse installed.
+    let modules = if sel.all {
+        Vec::new()
+    } else {
+        match resolve_modules(sel, &registry, installer.provider(), false) {
+            Ok(m) => m,
+            Err(e) => {
+                out.error(e);
+                return exit_codes::USAGE;
+            }
+        }
+    };
+    if args.force && !sel.yes && !sel.dry_run && !confirm_force(out) {
+        return exit_codes::USAGE;
+    }
+    let req = match request(scope, modules, sel.dry_run, args.force) {
+        Ok(r) => r,
+        Err(e) => {
+            out.error(e);
+            return exit_codes::INTERNAL;
+        }
+    };
+    let result = installer.uninstall(&req);
+    report(out, &result, sel.dry_run, "uninstall")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn sel(all: bool, only: &[&str], except: &[&str]) -> Selection {
+        Selection {
+            all,
+            only: only.iter().map(|s| s.to_string()).collect(),
+            except: except.iter().map(|s| s.to_string()).collect(),
+            provider: vec!["git".into()],
+            scope: "repo".into(),
+            dry_run: false,
+            yes: false,
+            interactive: false,
+        }
+    }
+
+    #[test]
+    fn resolves_selection() {
+        let registry = crate::modules::registry();
+        let all = resolve_modules(&sel(true, &[], &[]), &registry, "git", false).unwrap();
+        assert!(all.contains(&"git.ai-attribution".to_string()));
+        let none = resolve_modules(
+            &sel(true, &[], &["git.ai-attribution"]),
+            &registry,
+            "git",
+            false,
+        )
+        .unwrap();
+        assert!(!none.contains(&"git.ai-attribution".to_string()));
+        let only = resolve_modules(
+            &sel(false, &["git.ai-attribution", "git.ai-attribution"], &[]),
+            &registry,
+            "git",
+            false,
+        )
+        .unwrap();
+        assert_eq!(only, vec!["git.ai-attribution".to_string()]);
+        assert!(resolve_modules(&sel(false, &["nope.x"], &[]), &registry, "git", false).is_err());
+        assert!(
+            resolve_modules(&sel(false, &[], &[]), &registry, "git", false)
+                .unwrap()
+                .is_empty()
+        );
+    }
 }
