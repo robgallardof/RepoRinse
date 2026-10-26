@@ -103,6 +103,10 @@ reporinse modules list
 > the hooks fall back to `reporinse` on `PATH`; if that is missing they skip their checks (they never block your
 > commit). Re-run `reporinse install …` after moving it.
 
+> [!TIP]
+> **Coming from [no-ai-coauthor](https://github.com/robgallardof/no-ai-couathor)?** RepoRinse is its successor.
+> Follow the [migration guide](docs/migration/no-ai-couathor.md) — the old hook keeps working until you retire it.
+
 ### Option B — Offline archive
 
 Build a portable `.zip` (Windows) or `.tar.gz` (Linux/macOS) with a SHA-256 checksum:

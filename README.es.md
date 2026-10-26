@@ -103,6 +103,10 @@ reporinse modules list
 > `reporinse` del `PATH`; si tampoco existe, omiten sus revisiones (nunca bloquean tu commit). Vuelve a ejecutar
 > `reporinse install …` después de moverlo.
 
+> [!TIP]
+> **¿Vienes de [no-ai-coauthor](https://github.com/robgallardof/no-ai-couathor)?** RepoRinse es su sucesor.
+> Sigue la [guía de migración](docs/migration/no-ai-couathor.md#español): el hook anterior sigue funcionando hasta que lo retires.
+
 ### Opción B — Paquete offline
 
 Genera un `.zip` (Windows) o `.tar.gz` (Linux/macOS) portable con su checksum SHA-256:
