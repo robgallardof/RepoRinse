@@ -4,7 +4,7 @@ use crate::cli::output::Output;
 
 #[derive(Debug, Args)]
 pub struct FixArgs {
-    /// Reserved: staged fixes are unavailable; use --files after reviewing check --staged.
+    /// Fix staged content (index and working tree together; refuses partially staged files).
     #[arg(long, conflicts_with = "files")]
     pub staged: bool,
     /// Fix these files.
