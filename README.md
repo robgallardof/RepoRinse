@@ -129,6 +129,22 @@ Get-FileHash .\reporinse-*.zip -Algorithm SHA256   # compare with the .sha256 fi
 pwsh .\installers\install.ps1 -AddToPath
 ```
 
+### Option C — Docker (optional)
+
+For CI or machines without Rust: the image runs `check` and `fix` on a repository mounted at `/repo`
+(non-root, no network needed). Git hooks and agent integrations are still installed natively with options A/B,
+because a hook installed from a container would point at a path that only exists inside it.
+
+```sh
+docker build -t reporinse:local .
+docker run --rm --network none -v "$PWD:/repo" reporinse:local check --staged
+docker run --rm --network none -v "$PWD:/repo" reporinse:local fix --message .git/COMMIT_EDITMSG
+REPORINSE_REPO=/path/to/repo docker compose run --rm reporinse check --files README.md
+```
+
+On Linux add `--user "$(id -u):$(id -g)"` (Compose: `REPORINSE_USER`) so fixes keep your file ownership.
+Details: [docs/DOCKER.md](docs/DOCKER.md).
+
 <p align="center"><img src="assets/readme/divider.svg" alt="" width="80%" /></p>
 
 <a id="-quick-start-5-minutes"></a>
@@ -508,6 +524,7 @@ cargo fmt --check
 cargo clippy --locked --all-targets -- -D warnings
 cargo test --locked                  # no network, Git/provider settings isolated in temp dirs
 python scripts/package.py            # offline release archive
+python scripts/test_docker.py        # optional Docker image, real container run
 ```
 
 CI runs on Windows, Linux and macOS. Before contributing, read [AGENTS.md](AGENTS.md) and

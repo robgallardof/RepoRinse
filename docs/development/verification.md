@@ -20,6 +20,11 @@ expansion is promised. File replacements are not locked against ordinary editors
 together but only roll back their own operations. Code comment heuristics are opt-in and do not parse syntax.
 P2 natural-language test-claim verification and AI detection are not shipped.
 
+Docker (optional image), executed locally on Docker 29.8 (Windows host, Linux containers):
+`python scripts/test_docker.py` built the image and passed non-root user, `check --files` JSON,
+`check --staged` on a bind mount owned by another UID, `fix --message` writing back to the host file and the
+Compose service with networking disabled. `install`/`uninstall` are intentionally not supported in containers.
+
 ## Español
 
 Las verificaciones locales se ejecutan en Windows. CI de Linux/macOS está configurado, no ejecutado aquí.

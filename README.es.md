@@ -129,6 +129,22 @@ Get-FileHash .\reporinse-*.zip -Algorithm SHA256   # compáralo con el archivo .
 pwsh .\installers\install.ps1 -AddToPath
 ```
 
+### Opción C — Docker (opcional)
+
+Para CI o equipos sin Rust: la imagen ejecuta `check` y `fix` sobre un repositorio montado en `/repo` (sin root y sin
+red). Los hooks de Git y las integraciones de agentes se instalan de forma nativa con las opciones A/B, porque un hook
+instalado desde un contenedor apuntaría a una ruta que solo existe dentro de él.
+
+```sh
+docker build -t reporinse:local .
+docker run --rm --network none -v "$PWD:/repo" reporinse:local check --staged
+docker run --rm --network none -v "$PWD:/repo" reporinse:local fix --message .git/COMMIT_EDITMSG
+REPORINSE_REPO=/ruta/al/repo docker compose run --rm reporinse check --files README.md
+```
+
+En Linux agrega `--user "$(id -u):$(id -g)"` (Compose: `REPORINSE_USER`) para que los arreglos conserven tu dueño de
+archivos. Detalles: [docs/DOCKER.md](docs/DOCKER.md) (en inglés).
+
 <p align="center"><img src="assets/readme/divider.svg" alt="" width="80%" /></p>
 
 <a id="-inicio-rápido-5-minutos"></a>
@@ -513,6 +529,7 @@ cargo fmt --check
 cargo clippy --locked --all-targets -- -D warnings
 cargo test --locked                  # sin red; Git y ajustes de agentes aislados en carpetas temporales
 python scripts/package.py            # paquete offline
+python scripts/test_docker.py        # imagen Docker opcional, prueba con contenedor real
 ```
 
 La CI corre en Windows, Linux y macOS. Antes de contribuir lee [AGENTS.md](AGENTS.md) y

@@ -29,6 +29,11 @@ jobs:
           name: reporinse-${{ matrix.os }}
           path: dist/*
           if-no-files-found: error
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/test_docker.py
   msrv:
     runs-on: ubuntu-latest
     steps:

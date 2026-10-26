@@ -1,0 +1,9 @@
+**
+!Cargo.toml
+!Cargo.lock
+!LICENSE
+!src/
+!src/**
+!docs/
+!docs/rules/
+!docs/rules/**
