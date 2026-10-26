@@ -1,11 +1,11 @@
 <div align="center">
 
-# 🧼 RepoRinse
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/readme/banner-en-dark.svg">
+  <img src="assets/readme/banner-en-light.svg" alt="RepoRinse — Keep the code. Rinse the noise." width="100%">
+</picture>
 
-**Keep the code. Rinse the noise.**
-
-A local, deterministic CLI that keeps your repositories clean — AI attribution trailers, trailing whitespace,
-invisible Unicode, agent leftovers — and adds optional guardrails for coding agents.
+<br/>
 
 ![Rust 1.88+](https://img.shields.io/badge/rust-1.88%2B-orange?logo=rust)
 ![License MIT](https://img.shields.io/badge/license-MIT-blue)
@@ -17,9 +17,10 @@ invisible Unicode, agent leftovers — and adds optional guardrails for coding a
 
 </div>
 
----
+<p align="center"><img src="assets/readme/divider.svg" alt="" width="80%" /></p>
 
-## ✨ Why RepoRinse
+<a id="-why-reporinse"></a>
+<p align="center"><img src="assets/readme/sections/en-01.svg" alt="01 · Why RepoRinse" width="100%" /></p>
 
 | | |
 |---|---|
@@ -36,9 +37,10 @@ Co-Authored-By: Claude <noreply@…>   ─▶   Co-Authored-By: Ana <ana@example
 Co-Authored-By: Ana <ana@example.com>
 ```
 
----
+<p align="center"><img src="assets/readme/divider.svg" alt="" width="80%" /></p>
 
-## 📦 Install
+<a id="-install"></a>
+<p align="center"><img src="assets/readme/sections/en-02.svg" alt="02 · Install" width="100%" /></p>
 
 ### Requirements
 
@@ -127,9 +129,10 @@ Get-FileHash .\reporinse-*.zip -Algorithm SHA256   # compare with the .sha256 fi
 pwsh .\installers\install.ps1 -AddToPath
 ```
 
----
+<p align="center"><img src="assets/readme/divider.svg" alt="" width="80%" /></p>
 
-## 🚀 Quick start (5 minutes)
+<a id="-quick-start-5-minutes"></a>
+<p align="center"><img src="assets/readme/sections/en-03.svg" alt="03 · Quick start (5 minutes)" width="100%" /></p>
 
 Inside any Git repository:
 
@@ -151,9 +154,10 @@ reporinse doctor
 
 From now on, every `git commit` removes known AI co-author trailers from the message and reviews the staged files.
 
----
+<p align="center"><img src="assets/readme/divider.svg" alt="" width="80%" /></p>
 
-## 📋 Rules
+<a id="-rules"></a>
+<p align="center"><img src="assets/readme/sections/en-04.svg" alt="04 · Rules" width="100%" /></p>
 
 | Rule | Default | What it does |
 |---|:---:|---|
@@ -185,9 +189,10 @@ reporinse rule explain text.whitespace        # full documentation with examples
 
 Docs for each rule live in [`docs/rules/`](docs/rules/).
 
----
+<p align="center"><img src="assets/readme/divider.svg" alt="" width="80%" /></p>
 
-## 🔍 Checking
+<a id="-checking"></a>
+<p align="center"><img src="assets/readme/sections/en-05.svg" alt="05 · Checking" width="100%" /></p>
 
 `check` **never writes**. Pick one input:
 
@@ -210,9 +215,10 @@ Useful global flags: `--json` (machine-readable), `--quiet` (only blocking findi
 | `3` | Configuration error |
 | `4` | Conflict (e.g. a file changed since analysis, `core.hooksPath` set globally) |
 
----
+<p align="center"><img src="assets/readme/divider.svg" alt="" width="80%" /></p>
 
-## 🧽 Fixing
+<a id="-fixing"></a>
+<p align="center"><img src="assets/readme/sections/en-06.svg" alt="06 · Fixing" width="100%" /></p>
 
 Fixes only run for rules you explicitly set to `mode = "fix"` (`git.ai-attribution` is `fix` by default).
 
@@ -252,9 +258,10 @@ reporinse fix --message .git/COMMIT_EDITMSG   # clean a commit message file in p
 
 </details>
 
----
+<p align="center"><img src="assets/readme/divider.svg" alt="" width="80%" /></p>
 
-## 🪝 Git hooks
+<a id="-git-hooks"></a>
+<p align="center"><img src="assets/readme/sections/en-07.svg" alt="07 · Git hooks" width="100%" /></p>
 
 ### What gets installed
 
@@ -334,9 +341,10 @@ Full details: [docs/integrations/git.md](docs/integrations/git.md).
 
 </details>
 
----
+<p align="center"><img src="assets/readme/divider.svg" alt="" width="80%" /></p>
 
-## 🤖 Agent hooks (Claude, Codex, Gemini, Cursor)
+<a id="-agent-hooks-claude-codex-gemini-cursor"></a>
+<p align="center"><img src="assets/readme/sections/en-08.svg" alt="08 · Agent hooks (Claude, Codex, Gemini, Cursor)" width="100%" /></p>
 
 RepoRinse can plug into the native hook systems of coding agents to **warn about or block** commands and file
 paths you list in your policy.
@@ -422,9 +430,10 @@ Per-provider details: [Claude](docs/integrations/claude.md) · [Codex](docs/inte
 
 </details>
 
----
+<p align="center"><img src="assets/readme/divider.svg" alt="" width="80%" /></p>
 
-## ⚙️ Configuration
+<a id="️-configuration"></a>
+<p align="center"><img src="assets/readme/sections/en-09.svg" alt="09 · Configuration" width="100%" /></p>
 
 `reporinse init` creates `.reporinse.toml` at the repository root. Presets: `minimal`, `balanced` (default),
 `strict`, `custom`.
@@ -474,9 +483,10 @@ reporinse config explain      # every effective value and where it came from
 
 Full reference: [docs/configuration/README.md](docs/configuration/README.md).
 
----
+<p align="center"><img src="assets/readme/divider.svg" alt="" width="80%" /></p>
 
-## 🩺 Troubleshooting
+<a id="-troubleshooting"></a>
+<p align="center"><img src="assets/readme/sections/en-10.svg" alt="10 · Troubleshooting" width="100%" /></p>
 
 | Symptom | What to do |
 |---|---|
@@ -487,9 +497,10 @@ Full reference: [docs/configuration/README.md](docs/configuration/README.md).
 | Unsure what a rule did | `reporinse rule explain <id>` or `reporinse check --verbose` |
 | Need it in CI / scripts | Add `--json` and use the exit codes |
 
----
+<p align="center"><img src="assets/readme/divider.svg" alt="" width="80%" /></p>
 
-## 🛠️ Development
+<a id="️-development"></a>
+<p align="center"><img src="assets/readme/sections/en-11.svg" alt="11 · Development" width="100%" /></p>
 
 ```sh
 cargo build
@@ -503,7 +514,12 @@ CI runs on Windows, Linux and macOS. Before contributing, read [AGENTS.md](AGENT
 [CONTRIBUTING.md](CONTRIBUTING.md). What is verified and what is not:
 [docs/development/verification.md](docs/development/verification.md).
 
-## 📚 More
+<a id="-more"></a>
+<p align="center"><img src="assets/readme/sections/en-12.svg" alt="12 · More" width="100%" /></p>
 
 [Configuration](docs/configuration/README.md) · [Rules](docs/rules/) · [Integrations](docs/integrations/) ·
 [Security](SECURITY.md) · [Changelog](CHANGELOG.md) · [License (MIT)](LICENSE)
+
+<br/>
+
+<img src="assets/readme/footer-en.svg" alt="RepoRinse" width="100%" />
