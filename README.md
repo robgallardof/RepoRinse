@@ -145,6 +145,9 @@ REPORINSE_REPO=/path/to/repo docker compose run --rm reporinse check --files REA
 On Linux add `--user "$(id -u):$(id -g)"` (Compose: `REPORINSE_USER`) so fixes keep your file ownership.
 Details: [docs/DOCKER.md](docs/DOCKER.md).
 
+Verify the real image and Compose service with `python scripts/test_docker.py`.
+It uses a temporary repository and checks staged files and message fixes without installing host hooks.
+
 <p align="center"><img src="assets/readme/divider.svg" alt="" width="80%" /></p>
 
 <a id="-quick-start-5-minutes"></a>

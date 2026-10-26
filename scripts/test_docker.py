@@ -11,6 +11,7 @@ global/system config. Temporary files and containers are removed on exit.
 
 import json
 import os
+import secrets
 import subprocess
 import tempfile
 from pathlib import Path
@@ -66,11 +67,13 @@ def main():
         print("ok  fix --message: AI trailer removed in the mounted file")
 
         env = dict(os.environ, REPORINSE_REPO=str(repo), REPORINSE_USER=user)
-        compose = ["docker", "compose", "-p", "reporinse-smoke", "-f", str(ROOT / "compose.yaml")]
-        out = run(*compose, "run", "--rm", "reporinse", "check", "--files", "a.txt", "--format", "plain", env=env).stdout
-        assert "text.whitespace" in out, out
-        print("ok  compose run: read-only container, no network")
-        run(*compose, "down", "--remove-orphans", env=env, check=False)
+        compose = ["docker", "compose", "-p", "reporinse-smoke-" + secrets.token_hex(3), "-f", str(ROOT / "compose.yaml")]
+        try:
+            out = run(*compose, "run", "--rm", "reporinse", "check", "--files", "a.txt", "--format", "plain", env=env).stdout
+            assert "text.whitespace" in out, out
+            print("ok  compose run: read-only container, no network")
+        finally:
+            run(*compose, "down", "--remove-orphans", env=env, check=False)
     print("all ok")
 
 

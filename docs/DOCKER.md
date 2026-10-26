@@ -60,3 +60,12 @@ python scripts/test_docker.py
 Builds the image and, against a throw-away Git repository with an isolated `HOME`, checks: non-root user,
 `check --files` JSON, `check --staged` on a mount owned by another UID, `fix --message` writing back to the host
 file, and the Compose service with networking disabled.
+
+### Verification — 2026-10-26
+
+Executed on Windows with Docker Desktop Linux containers: image build, UID 10001,
+JSON file findings, staged Git inspection, message fix on a temporary mount and
+Compose with networking disabled. All passed. `cargo fmt --check`,
+`cargo clippy --all-targets -- -D warnings` and `cargo test` also passed.
+Host hook/agent installation was NOT EXECUTED in this container verification;
+native integration tests exercised isolated temporary installations instead.

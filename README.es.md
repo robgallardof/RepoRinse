@@ -145,6 +145,9 @@ REPORINSE_REPO=/ruta/al/repo docker compose run --rm reporinse check --files REA
 En Linux agrega `--user "$(id -u):$(id -g)"` (Compose: `REPORINSE_USER`) para que los arreglos conserven tu dueño de
 archivos. Detalles: [docs/DOCKER.md](docs/DOCKER.md) (en inglés).
 
+Verifica la imagen y Compose reales con `python scripts/test_docker.py`.
+Usa un repositorio temporal y comprueba el índice y la corrección de mensajes sin instalar hooks en tu equipo.
+
 <p align="center"><img src="assets/readme/divider.svg" alt="" width="80%" /></p>
 
 <a id="-inicio-rápido-5-minutos"></a>
