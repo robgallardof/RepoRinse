@@ -115,6 +115,8 @@ pub fn collect(git: &Git) -> Result<Staged, String> {
         &[
             "diff",
             "--cached",
+            "--no-ext-diff",
+            "--no-textconv",
             "--raw",
             "-z",
             "--no-renames",
@@ -123,7 +125,15 @@ pub fn collect(git: &Git) -> Result<Staged, String> {
         None,
     )?;
     let numstat = git.bytes(
-        &["diff", "--cached", "--numstat", "-z", "--no-renames"],
+        &[
+            "diff",
+            "--cached",
+            "--no-ext-diff",
+            "--no-textconv",
+            "--numstat",
+            "-z",
+            "--no-renames",
+        ],
         None,
     )?;
     let entries = parse_raw(&raw);
@@ -162,6 +172,21 @@ pub fn collect(git: &Git) -> Result<Staged, String> {
             skip.is_none()
         })
         .collect();
+    let mut bounded = Vec::new();
+    for entry in readable {
+        let size = git
+            .text(&["cat-file", "-s", &entry.blob])?
+            .parse::<usize>()
+            .map_err(|_| "invalid object size")?;
+        if size > MAX_FILE_BYTES {
+            staged
+                .skipped
+                .push(format!("{}: larger than 8 MiB", entry.path));
+        } else {
+            bounded.push(entry);
+        }
+    }
+    let readable = bounded;
     let ids: Vec<String> = readable.iter().map(|e| e.blob.clone()).collect();
     for (entry, bytes) in readable.iter().zip(read_blobs(git, &ids)?) {
         if bytes.len() > MAX_FILE_BYTES {
@@ -192,6 +217,61 @@ pub fn collect(git: &Git) -> Result<Staged, String> {
         staged: true,
     });
     Ok(staged)
+}
+
+/// Staged file rules inspect only added/modified lines. Historical whitespace stays untouched.
+pub fn analyze(
+    git: &Git,
+    registry: &crate::core::registry::RuleRegistry,
+    config: &crate::core::config::EffectiveConfig,
+    doc: &SourceDocument,
+    only: &[String],
+) -> Result<crate::core::engine::EngineReport, String> {
+    let effective = crate::core::editorconfig::for_document(config, git.dir(), doc)?;
+    let mut report = crate::core::engine::run_document(registry, &effective, doc, only);
+    let diff = git.text(&[
+        "diff",
+        "--cached",
+        "--no-ext-diff",
+        "--no-textconv",
+        "--no-color",
+        "--unified=0",
+        "--",
+        &doc.path,
+    ])?;
+    let mut ranges = Vec::new();
+    for line in diff.lines().filter(|s| s.starts_with("@@ ")) {
+        if let Some(range) = line.split_whitespace().find_map(|s| s.strip_prefix('+')) {
+            let mut parts = range.split(',');
+            let start = parts
+                .next()
+                .and_then(|s| s.parse::<usize>().ok())
+                .ok_or("invalid diff hunk")?;
+            let count = parts
+                .next()
+                .map(|s| s.parse::<usize>())
+                .transpose()
+                .map_err(|_| "invalid diff hunk")?
+                .unwrap_or(1);
+            ranges.push((start, start.saturating_add(count)));
+        }
+    }
+    let included = |line: usize| {
+        ranges
+            .iter()
+            .any(|(start, end)| line >= *start && line < *end)
+    };
+    report.findings.retain(|f| f.line.is_none_or(included));
+    for plan in &mut report.fixes {
+        plan.edits.retain(|edit| {
+            doc.text
+                .get(..edit.start)
+                .map(|s| included(s.bytes().filter(|b| *b == b'\n').count() + 1))
+                .unwrap_or(false)
+        });
+    }
+    report.fixes.retain(|p| !p.edits.is_empty());
+    Ok(report)
 }
 
 #[cfg(test)]

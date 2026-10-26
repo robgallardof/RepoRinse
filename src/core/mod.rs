@@ -1,6 +1,7 @@
 //! Shared contracts and the local rule engine.
 
 pub mod config;
+pub mod editorconfig;
 pub mod engine;
 pub mod integration;
 pub mod model;

@@ -72,7 +72,7 @@ pub fn pre_commit(
     let staged = staged::collect(git)?;
     let mut report = EngineReport::default();
     for document in &staged.documents {
-        report.merge(engine::run_document(registry, config, document, only));
+        report.merge(staged::analyze(git, registry, config, document, only)?);
     }
     if let Some(changes) = &staged.changes {
         report.merge(engine::run_changes(registry, config, changes, only));

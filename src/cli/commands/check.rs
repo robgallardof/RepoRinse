@@ -1,6 +1,5 @@
 use clap::Args;
 
-use super::not_implemented;
 use crate::cli::output::Output;
 
 #[derive(Debug, Args)]
@@ -22,6 +21,19 @@ pub struct CheckArgs {
     pub format: String,
 }
 
-pub fn run(_args: &CheckArgs, out: &mut Output) -> i32 {
-    not_implemented(out, "check")
+pub fn run(args: &CheckArgs, out: &mut Output) -> i32 {
+    if !matches!(args.format.as_str(), "human" | "plain" | "json") {
+        out.error("unknown output format");
+        return 2;
+    }
+    out.json |= args.format == "json";
+    super::scan::run(
+        &args.files,
+        args.message.as_deref(),
+        args.staged,
+        &args.only,
+        false,
+        false,
+        out,
+    )
 }

@@ -22,3 +22,4 @@ pub fn installer() -> Option<Box<dyn Installer>> {
 pub fn adapter() -> Option<Box<dyn Adapter>> {
     None
 }
+pub mod staged_fix;

@@ -1,4 +1,5 @@
 //! One file per command: its clap `Args` and a `run` returning an exit code.
+mod agent_hook;
 
 pub mod check;
 pub mod config;
@@ -9,13 +10,5 @@ pub mod init;
 pub mod install;
 pub mod modules;
 pub mod rule;
+mod scan;
 pub mod status;
-
-use super::output::Output;
-use crate::core::model::exit_codes;
-
-/// Used by commands whose workstream has not landed yet. Never shipped: the release checklist greps for it.
-pub(crate) fn not_implemented(out: &mut Output, what: &str) -> i32 {
-    out.error(format!("'{what}' is not implemented in this build yet"));
-    exit_codes::NOT_IMPLEMENTED
-}

@@ -362,12 +362,12 @@ fn deletions(
         .rev()
         .find(|(i, l)| l.class == LineClass::Text && !drop.contains(i))
         .map(|(i, _)| i);
-    if let Some(last) = last_text {
-        if removed.iter().any(|&r| r > last) {
-            for (i, line) in lines.iter().enumerate().skip(last + 1) {
-                if line.class == LineClass::Blank {
-                    drop.insert(i);
-                }
+    if let Some(last) = last_text
+        && removed.iter().any(|&r| r > last)
+    {
+        for (i, line) in lines.iter().enumerate().skip(last + 1) {
+            if line.class == LineClass::Blank {
+                drop.insert(i);
             }
         }
     }
@@ -392,28 +392,27 @@ fn deletions(
         && lines
             .last()
             .is_some_and(|_| drop.contains(&(lines.len() - 1)))
+        && let Some(keep) = (0..lines.len()).rev().find(|i| !drop.contains(i))
     {
-        if let Some(keep) = (0..lines.len()).rev().find(|i| !drop.contains(i)) {
-            let line = &lines[keep];
-            let terminator = line.full_len - line.content.len();
-            if terminator > 0 {
-                let start = line.start + line.content.len();
-                match edits
-                    .iter_mut()
-                    .find(|e| e.start == line.start + line.full_len)
-                {
-                    Some(next) => {
-                        next.start = start;
-                        next.len += terminator;
-                    }
-                    None => edits.push(TextEdit {
-                        start,
-                        len: terminator,
-                        replacement: String::new(),
-                    }),
+        let line = &lines[keep];
+        let terminator = line.full_len - line.content.len();
+        if terminator > 0 {
+            let start = line.start + line.content.len();
+            match edits
+                .iter_mut()
+                .find(|e| e.start == line.start + line.full_len)
+            {
+                Some(next) => {
+                    next.start = start;
+                    next.len += terminator;
                 }
-                edits.sort_by_key(|e| e.start);
+                None => edits.push(TextEdit {
+                    start,
+                    len: terminator,
+                    replacement: String::new(),
+                }),
             }
+            edits.sort_by_key(|e| e.start);
         }
     }
     edits

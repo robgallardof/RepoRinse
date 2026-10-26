@@ -1,0 +1,235 @@
+rustc --version
+rustc 1.99.1 (58cf8f9c3 2026-10-13)
+
+
+cargo fmt --check
+
+
+cargo clippy --locked --all-targets -- -D warnings
+    Checking reporinse v0.1.0 (<local>)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.65s
+
+
+cargo test --locked
+
+running 35 tests
+test integrations::git::manifest::tests::civil_dates ... ok
+test core::planning::tests::refuses_overlap_and_split_chars ... ok
+test core::planning::tests::refuses_stale_text ... ok
+test cli::commands::install::tests::resolves_selection ... ok
+test integrations::git::staged::tests::parses_raw_and_numstat ... ok
+test core::planning::tests::applies_non_overlapping_edits_in_any_order ... ok
+test integrations::git::hooks::tests::block_mode_blocks_without_fixing ... ok
+test modules::git::ai_attribution::tests::ambiguous_name_is_kept_with_diagnostic ... ok
+test modules::git::ai_attribution::tests::collapses_only_blank_lines_left_by_removals ... ok
+test modules::git::ai_attribution::tests::crlf_and_unicode_preserved ... ok
+test integrations::git::hooks::tests::commit_msg_applies_fixes_and_keeps_findings ... ok
+test modules::git::agents::tests::configured_identities ... ok
+test modules::git::ai_attribution::tests::subject_is_never_removed ... ok
+test modules::git::ai_attribution::tests::claude_code_footer_and_trailer ... ok
+test modules::git::ai_attribution::tests::idempotent ... ok
+test modules::git::agents::tests::decision_table ... ok
+test integrations::git::shim::tests::quotes_and_markers ... ok
+test modules::git::ai_attribution::tests::comments_and_scissors_untouched ... ok
+test modules::git::ai_attribution::tests::empty_and_comment_only_messages ... ok
+test modules::git::ai_attribution::tests::indented_squash_trailers ... ok
+test modules::git::ai_attribution::tests::modes_and_policies ... ok
+test modules::git::ai_attribution::tests::validates_options ... ok
+test modules::git::ai_attribution::tests::no_final_newline_is_kept ... ok
+test modules::git::agents::tests::agent_names_with_model_suffixes ... ok
+test modules::git::ai_attribution::tests::signature_shapes ... ok
+test integrations::git::shim::tests::user_scope_runs_repo_hooks ... ok
+test modules::git::ai_attribution::tests::extra_patterns_and_identities ... ok
+test modules::git::ai_attribution::tests::keeps_human_co_authors ... ok
+test modules::git::ai_attribution::tests::wildcard_matching ... ok
+test modules::git::ai_attribution::tests::mention_in_subject_or_sentence_survives ... ok
+test modules::tests::ids_are_unique_and_well_formed ... ok
+test modules::git::agents::tests::people_are_not_agents ... ok
+test integrations::git::manifest::tests::round_trip ... ok
+test integrations::git::transaction::tests::rolls_back_on_failure ... ok
+test integrations::git::hooks::tests::pre_commit_reads_the_index_not_the_worktree ... ok
+
+test result: ok. 35 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.26s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 3 tests
+test post_and_lifecycle_events_never_block_or_loop ... ok
+test four_protocols_parse_and_block_without_autoapproval ... ok
+test foreign_cursor_payload_and_bounded_messages ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 2 tests
+test cli_blocks_configured_actions_and_does_not_execute_commands ... ok
+test installed_handlers_execute_with_paths_containing_spaces_and_unicode ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.48s
+
+
+running 2 tests
+test user_scope_and_multi_provider_dry_run_are_isolated ... ok
+test installers_merge_idempotently_restore_exact_bytes_and_refuse_drift ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.58s
+
+
+running 3 tests
+test rule_explanations_are_bundled_in_binary ... ok
+test unicode_findings_never_echo_source_and_do_not_change_files ... ok
+test doctor_detects_drift_without_leaking_home_or_workspace ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.79s
+
+
+running 4 tests
+test repository_overrides_user_and_options_merge ... ok
+test hooks_honor_repository_modes_and_provider_disable ... ok
+test init_validates_and_refuses_overwrite ... ok
+test invalid_configuration_is_rejected ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.47s
+
+
+running 2 tests
+test staged_fixes_leave_historical_lines_untouched ... ok
+test nested_editorconfig_and_staged_snapshot_are_respected ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.59s
+
+
+running 6 tests
+test drifted_chained_hook_blocks_uninstall ... ok
+test foreign_failure_propagates_and_reporinse_does_not_run ... ok
+test lefthook_style_hook_is_chained ... ok
+test pre_commit_framework_style_hook_is_chained ... ok
+test plain_foreign_hook_is_chained_and_restored_exactly ... ok
+test husky_v9_layout_keeps_working ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.70s
+
+
+running 12 tests
+test hook_for_other_providers_is_a_clear_no_op ... ok
+test unknown_only_ids_never_break_a_commit ... ok
+test no_verify_skips_the_hook ... ok
+test comments_are_left_to_git ... ok
+test pre_commit_hook_reads_index_and_changes_nothing ... ok
+test crlf_and_unicode_messages_keep_their_bytes ... ok
+test human_named_claude_is_kept ... ok
+test missing_binary_fails_open ... ok
+test pre_commit_shim_runs_through_git_and_chains ... ok
+test ported_no_ai_coauthor_cases ... ok
+test amend_and_merge_messages_are_cleaned ... ok
+test case_a_ai_removed_human_kept_and_uninstall_leaves_nothing ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.14s
+
+
+running 16 tests
+test not_a_repository_is_a_clear_conflict ... ok
+test bare_repository_is_refused ... ok
+test json_output_is_the_install_result ... ok
+test manifest_records_what_was_installed ... ok
+test versioned_hooks_are_never_modified ... ok
+test cli_errors_have_documented_exit_codes ... ok
+test global_hooks_path_conflict_exits_4 ... ok
+test absolute_core_hooks_path_is_honoured ... ok
+test reinstall_is_idempotent ... ok
+test relative_core_hooks_path_is_honoured_and_kept ... ok
+test drift_is_detected_on_uninstall ... ok
+test dry_run_writes_nothing ... ok
+test deleted_hook_is_recreated_and_uninstall_tolerates_it ... ok
+test linked_worktree_shares_the_hooks ... ok
+test only_selection_and_partial_uninstall ... ok
+test user_scope_installs_globally_and_keeps_repo_hooks_running ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.62s
+
+
+running 3 tests
+test repo_install_on_top_of_no_ai_coauthor_and_back ... ok
+test global_no_ai_coauthor_install_is_reported_not_overridden ... ok
+test retiring_the_old_hook_fixes_its_false_positive ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.63s
+
+
+running 2 tests
+test partial_staging_and_index_locks_refuse_without_changes ... ok
+test staged_fix_changes_only_selected_index_entries_and_is_idempotent ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.61s
+
+
+running 2 tests
+test explicit_guards_do_not_match_clean_actions_and_do_not_leak_secrets ... ok
+test changeset_rules_have_negative_cases_and_honor_exclusions ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 2 tests
+test multi_provider_preflight_conflict_writes_nothing ... ok
+test staged_worktree_rollback_keeps_index_and_original_files ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.04s
+
+
+running 3 tests
+test stale_write_and_binary_are_refused ... ok
+test safe_fix_preserves_bom_crlf_and_markdown_breaks ... ok
+test block_json_exclusions_and_staged_content ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.44s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Compiling reporinse v0.1.0 (<local>)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.68s
+     Running unittests src\lib.rs (target\debug\deps\reporinse-fe4014c381b7c3af.exe)
+     Running unittests src\main.rs (target\debug\deps\reporinse-d1e136898f30b6ea.exe)
+     Running tests\adapter_contracts.rs (target\debug\deps\adapter_contracts-89183d170a44fbd1.exe)
+     Running tests\adapter_e2e.rs (target\debug\deps\adapter_e2e-5a5dcbef0942ab7b.exe)
+     Running tests\adapter_install.rs (target\debug\deps\adapter_install-9fb1b6cc5998332f.exe)
+     Running tests\cli_diagnostics.rs (target\debug\deps\cli_diagnostics-dd8c8d09d58d49ad.exe)
+     Running tests\core_config.rs (target\debug\deps\core_config-8c0d097ccf9d91f3.exe)
+     Running tests\core_editorconfig.rs (target\debug\deps\core_editorconfig-b7ae47a23f1a8d40.exe)
+     Running tests\git_coexistence.rs (target\debug\deps\git_coexistence-a580d5bab8bc1b4b.exe)
+     Running tests\git_hooks.rs (target\debug\deps\git_hooks-eab68f0710092d25.exe)
+     Running tests\git_install.rs (target\debug\deps\git_install-a6533bb6c2f8dbfd.exe)
+     Running tests\git_migration.rs (target\debug\deps\git_migration-3962cfb9ee26d797.exe)
+     Running tests\git_staged_fix.rs (target\debug\deps\git_staged_fix-6bfdfae2d7c9299f.exe)
+     Running tests\rules_review.rs (target\debug\deps\rules_review-74be40a0c87105d5.exe)
+     Running tests\security_regressions.rs (target\debug\deps\security_regressions-27b9a6eccf8cc01b.exe)
+     Running tests\text_whitespace.rs (target\debug\deps\text_whitespace-43501962b15bf2d8.exe)
+   Doc-tests reporinse
+
+
+cargo build --release --locked
+   Compiling reporinse v0.1.0 (<local>)
+    Finished `release` profile [optimized] target(s) in 56.43s
+
+
+<local> scripts/package.py --skip-build
+{"archive": "C:\\Users\\kingg\\Documents\\Projects\\RepoRinse\\dist\\reporinse-0.1.0-windows-amd64.zip", "sha256": "0271ff5ae4f66113f21b76b645a7f9ff6a0b21636a3c097bcadd4281fe2d354a", "checksum_file": "C:\\Users\\kingg\\Documents\\Projects\\RepoRinse\\dist\\reporinse-0.1.0-windows-amd64.zip.sha256"}
+
+
+<local>\AppData\Local\Temp\RepoRinse smoke ñ 4hmlb4bv\reporinse-0.1.0-windows-amd64\reporinse.exe --version
+reporinse 0.1.0
+
+
+C:\Program Files\WindowsApps\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\pwsh.EXE -NoProfile -NonInteractive -File <local>\AppData\Local\Temp\RepoRinse smoke ñ 4hmlb4bv\reporinse-0.1.0-windows-amd64\installers\install.ps1 -Binary <local>\AppData\Local\Temp\RepoRinse smoke ñ 4hmlb4bv\reporinse-0.1.0-windows-amd64\reporinse.exe -Destination <local>\AppData\Local\Temp\RepoRinse smoke ñ 4hmlb4bv\installed bin
+Installed to <local>\AppData\Local\Temp\RepoRinse smoke ñ 4hmlb4bv\installed bin. Install project hooks with reporinse install --provider git --all --yes.
+
+
+<local>\AppData\Local\Temp\RepoRinse smoke ñ 4hmlb4bv\installed bin\reporinse.exe --version
+reporinse 0.1.0

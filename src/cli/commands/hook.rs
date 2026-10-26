@@ -37,11 +37,7 @@ pub fn run(args: &HookArgs, out: &mut Output) -> i32 {
         .provider
         .eq_ignore_ascii_case(crate::integrations::git::PROVIDER)
     {
-        out.raw_err(format!(
-            "reporinse: hook provider '{}' is not supported by this build yet; nothing was checked.\n",
-            args.provider
-        ));
-        return exit_codes::OK;
+        return super::agent_hook::run(args, out);
     }
     match args.event.as_str() {
         shim::COMMIT_MSG => commit_msg(args, out),
@@ -84,7 +80,12 @@ fn load_config(
     out: &mut Output,
 ) -> Option<EffectiveConfig> {
     match config::load(registry, top, &CliOverrides::default()) {
-        Ok(c) => Some(c),
+        Ok(c) => {
+            if !c.providers.get("git").copied().unwrap_or(true) {
+                return None;
+            }
+            Some(c)
+        }
         Err(e) => {
             out.raw_err(format!(
                 "reporinse: configuration error, hook skipped (commit allowed): {e}\n\

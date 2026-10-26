@@ -80,6 +80,8 @@ impl Sandbox {
         cmd.env("HOME", &self.home)
             .env("XDG_CONFIG_HOME", self.home.join("config"))
             .env("APPDATA", self.home.join("appdata"))
+            .env("CODEX_HOME", self.home.join(".codex"))
+            .env("CLAUDE_CONFIG_DIR", self.home.join(".claude"))
             .env("REPORINSE_CONFIG_HOME", &self.reporinse_home)
             .env("GIT_CONFIG_GLOBAL", &self.gitconfig)
             .env("GIT_CONFIG_NOSYSTEM", "1")
@@ -281,4 +283,18 @@ pub fn stdout(out: &Output) -> String {
 
 pub fn stderr(out: &Output) -> String {
     String::from_utf8_lossy(&out.stderr).to_string()
+}
+
+/// Locate Git for Windows shell without requiring global PATH edits.
+pub fn shell() -> Command {
+    if cfg!(windows) {
+        for dir in std::env::split_paths(&std::env::var_os("PATH").unwrap_or_default()) {
+            for candidate in [dir.join("sh.exe"), dir.join("../bin/sh.exe")] {
+                if candidate.is_file() {
+                    return Command::new(candidate);
+                }
+            }
+        }
+    }
+    Command::new("sh")
 }

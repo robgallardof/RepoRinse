@@ -1,11 +1,10 @@
 use clap::Args;
 
-use super::not_implemented;
 use crate::cli::output::Output;
 
 #[derive(Debug, Args)]
 pub struct FixArgs {
-    /// Fix staged files (refuses files that also have unstaged changes).
+    /// Reserved: staged fixes are unavailable; use --files after reviewing check --staged.
     #[arg(long, conflicts_with = "files")]
     pub staged: bool,
     /// Fix these files.
@@ -22,6 +21,14 @@ pub struct FixArgs {
     pub dry_run: bool,
 }
 
-pub fn run(_args: &FixArgs, out: &mut Output) -> i32 {
-    not_implemented(out, "fix")
+pub fn run(args: &FixArgs, out: &mut Output) -> i32 {
+    super::scan::run(
+        &args.files,
+        args.message.as_deref(),
+        args.staged,
+        &args.only,
+        true,
+        args.dry_run,
+        out,
+    )
 }

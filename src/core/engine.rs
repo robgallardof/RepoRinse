@@ -91,7 +91,16 @@ pub fn run_changes(
 ) -> EngineReport {
     let mut report = EngineReport::default();
     for (rule, settings) in selected(registry, config, TargetKind::ChangeSet, only) {
-        let ctx = RuleContext::for_changes(&settings, changes);
+        let filtered = ChangeSet {
+            paths: changes
+                .paths
+                .iter()
+                .filter(|p| !config.is_excluded(rule.metadata().id, &p.path))
+                .cloned()
+                .collect(),
+            staged: changes.staged,
+        };
+        let ctx = RuleContext::for_changes(&settings, &filtered);
         collect(&mut report, &settings, rule.analyze(&ctx));
     }
     report

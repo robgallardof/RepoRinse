@@ -57,18 +57,18 @@ pub fn atomic_write(path: &Path, bytes: &[u8], executable: bool) -> std::io::Res
     if let Some(parent) = path.parent() {
         std::fs::create_dir_all(parent)?;
     }
-    let name = path
-        .file_name()
-        .map(|n| n.to_string_lossy().to_string())
-        .unwrap_or_default();
-    let tmp = path.with_file_name(format!(".{name}.reporinse-tmp"));
-    std::fs::write(&tmp, bytes)?;
-    if executable {
-        set_executable(&tmp)?;
+    use std::io::Write;
+    let mut temporary = tempfile::NamedTempFile::new_in(path.parent().unwrap_or(Path::new(".")))?;
+    temporary.write_all(bytes)?;
+    if let Ok(meta) = std::fs::metadata(path) {
+        temporary.as_file().set_permissions(meta.permissions())?;
     }
-    std::fs::rename(&tmp, path).inspect_err(|_| {
-        let _ = std::fs::remove_file(&tmp);
-    })
+    if executable {
+        set_executable(temporary.path())?;
+    }
+    temporary.as_file().sync_all()?;
+    temporary.persist(path).map_err(|e| e.error)?;
+    Ok(())
 }
 
 #[cfg(unix)]
@@ -192,10 +192,10 @@ fn undo(action: Undo, git: &Git) {
             permissions,
         } => match previous {
             Some(bytes) => {
-                if atomic_write(&path, &bytes, false).is_ok() {
-                    if let Some(p) = permissions {
-                        let _ = std::fs::set_permissions(&path, p);
-                    }
+                if atomic_write(&path, &bytes, false).is_ok()
+                    && let Some(p) = permissions
+                {
+                    let _ = std::fs::set_permissions(&path, p);
                 }
             }
             None => {

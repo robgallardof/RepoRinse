@@ -1,0 +1,91 @@
+{
+  "platform": "Windows-11-10.0.26200-SP0",
+  "checks": [
+    {
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "fmt",
+        "--check"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--locked"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "<local>",
+        "scripts/package.py",
+        "--skip-build"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "<local>\\AppData\\Local\\Temp\\RepoRinse smoke ñ 4hmlb4bv\\reporinse-0.1.0-windows-amd64\\reporinse.exe",
+        "--version"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "C:\\Program Files\\WindowsApps\\Microsoft.PowerShell_7.6.6.0_x64__8wekyb3d8bbwe\\pwsh.EXE",
+        "-NoProfile",
+        "-NonInteractive",
+        "-File",
+        "<local>\\AppData\\Local\\Temp\\RepoRinse smoke ñ 4hmlb4bv\\reporinse-0.1.0-windows-amd64\\installers\\install.ps1",
+        "-Binary",
+        "<local>\\AppData\\Local\\Temp\\RepoRinse smoke ñ 4hmlb4bv\\reporinse-0.1.0-windows-amd64\\reporinse.exe",
+        "-Destination",
+        "<local>\\AppData\\Local\\Temp\\RepoRinse smoke ñ 4hmlb4bv\\installed bin"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "<local>\\AppData\\Local\\Temp\\RepoRinse smoke ñ 4hmlb4bv\\installed bin\\reporinse.exe",
+        "--version"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "tests_passed": 97,
+  "tests_failed": 0,
+  "archive": "reporinse-0.1.0-windows-amd64.zip",
+  "sha256": "0271ff5ae4f66113f21b76b645a7f9ff6a0b21636a3c097bcadd4281fe2d354a",
+  "release_smoke": "passed"
+}

@@ -1,4 +1,6 @@
 //! Provider integrations. Each provider exposes only what is implemented and verified.
+pub mod agent_adapter;
+pub mod agent_install;
 
 pub mod antigravity;
 pub mod claude;

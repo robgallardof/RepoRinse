@@ -261,9 +261,9 @@ fn missing_binary_fails_open() {
 #[test]
 fn hook_for_other_providers_is_a_clear_no_op() {
     let sb = Sandbox::new();
-    let out = sb.reporinse(sb.path(), &["hook", "claude", "PreToolUse"]);
+    let out = sb.reporinse(sb.path(), &["hook", "antigravity", "PreToolUse"]);
     assert_code(&out, 0);
-    assert!(stderr(&out).contains("not supported by this build yet"));
+    assert!(stderr(&out).contains("hook skipped"));
     let out = sb.reporinse(sb.path(), &["hook", "git", "pre-push", "origin", "url"]);
     assert_code(&out, 0);
 }
@@ -336,7 +336,7 @@ fn pre_commit_shim_runs_through_git_and_chains() {
     );
 
     // The dispatcher returns the foreign exit code itself.
-    let mut cmd = std::process::Command::new("sh");
+    let mut cmd = support::shell();
     cmd.current_dir(&repo.dir)
         .arg(repo.hooks_dir().join("pre-commit"));
     assert_eq!(

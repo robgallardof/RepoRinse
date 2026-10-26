@@ -70,3 +70,14 @@ Installed hook shims call `reporinse hook git <hook-name> [args…]`. Agent hook
 P0 → P1 → P2 as in the spec §3. A rule is *done* only with metadata, config, check/fix behaviour, docs EN/ES
 section, positive/negative/idempotency tests and a false-positive strategy. Everything else stays `planned` and is
 not advertised in the README.
+
+
+## Delivery status — 2026-10-26
+
+Core/config/check/fix, staged corrections, P0 text review, Git integration, four native agent adapters,
+explicit command/path guards, P1 change review, status/doctor, offline packaging and CI are implemented.
+This delivery uses code.duplicate-comments and git.dependency-watch as conservative path/lexical checks;
+it does not advertise semantic comment quality or package-delta analysis. Frozen public signatures remain unchanged.
+New orchestration modules: core/editorconfig, integrations/git/staged_fix, agent_adapter and agent_install.
+Native Antigravity and P2 test-claim evidence checks are excluded pending host/spec verification.
+See docs/development/verification.md for actual test coverage and limits.

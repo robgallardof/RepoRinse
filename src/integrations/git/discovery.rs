@@ -120,10 +120,10 @@ pub fn reporinse_home() -> Option<PathBuf> {
     if let Some(dir) = var("XDG_CONFIG_HOME") {
         return Some(dir.join("reporinse"));
     }
-    if cfg!(windows) {
-        if let Some(dir) = var("APPDATA") {
-            return Some(dir.join("reporinse"));
-        }
+    if cfg!(windows)
+        && let Some(dir) = var("APPDATA")
+    {
+        return Some(dir.join("reporinse"));
     }
     var("HOME")
         .or_else(|| var("USERPROFILE"))

@@ -10,7 +10,7 @@ use crate::core::integration::{InstallActionKind, InstallRequest, InstallResult,
 use crate::core::model::{Availability, RiskLevel, RuleMode, exit_codes};
 use crate::core::registry::RuleRegistry;
 
-#[derive(Debug, Args)]
+#[derive(Debug, Clone, Args)]
 pub struct Selection {
     /// Every module applicable to the provider (never enables high-risk modifying modes).
     #[arg(long, conflicts_with = "only")]
@@ -120,16 +120,6 @@ fn prepare(
     sel: &Selection,
     out: &mut Output,
 ) -> Result<(InstallScope, Box<dyn crate::core::integration::Installer>), i32> {
-    if sel.interactive {
-        if !std::io::stdin().is_terminal() {
-            out.error("--interactive needs a terminal; use --all or --only <ids> instead");
-            return Err(exit_codes::USAGE);
-        }
-        out.error(
-            "interactive selection is not implemented in this build yet; use --all or --only <ids>",
-        );
-        return Err(exit_codes::NOT_IMPLEMENTED);
-    }
     let Some(scope) = parse_scope(&sel.scope) else {
         out.error(format!(
             "unknown scope '{}': use repo or user (alias global)",
@@ -146,7 +136,7 @@ fn prepare(
         let known = crate::integrations::PROVIDERS.contains(&p.to_lowercase().as_str());
         out.error(if known {
             format!(
-                "provider '{p}' is not supported by this build yet; only 'git' can be installed"
+                "provider '{p}' has no verified native installer; use --provider git for Antigravity"
             )
         } else {
             format!(
@@ -240,32 +230,7 @@ fn request(
 }
 
 pub fn run_install(args: &InstallArgs, out: &mut Output) -> i32 {
-    let sel = &args.selection;
-    let (scope, installer) = match prepare(sel, out) {
-        Ok(v) => v,
-        Err(code) => return code,
-    };
-    let registry = crate::modules::registry();
-    let modules = match resolve_modules(sel, &registry, installer.provider(), true) {
-        Ok(m) => m,
-        Err(e) => {
-            out.error(e);
-            return exit_codes::USAGE;
-        }
-    };
-    if modules.is_empty() {
-        out.error("no module selected; use --all or --only <ids>");
-        return exit_codes::USAGE;
-    }
-    let req = match request(scope, modules, sel.dry_run, args.force) {
-        Ok(r) => r,
-        Err(e) => {
-            out.error(e);
-            return exit_codes::INTERNAL;
-        }
-    };
-    let result = installer.install(&req);
-    report(out, &result, sel.dry_run, "install")
+    operate(&args.selection, args.force, false, out)
 }
 
 /// `--force` deletes files a person may have edited: confirm unless `--yes`.
@@ -281,36 +246,109 @@ fn confirm_force(out: &mut Output) -> bool {
 }
 
 pub fn run_uninstall(args: &UninstallArgs, out: &mut Output) -> i32 {
-    let sel = &args.selection;
-    let (scope, installer) = match prepare(sel, out) {
-        Ok(v) => v,
-        Err(code) => return code,
-    };
-    let registry = crate::modules::registry();
-    // `--only` removes just those modules; nothing or `--all` removes everything RepoRinse installed.
-    let modules = if sel.all {
-        Vec::new()
-    } else {
-        match resolve_modules(sel, &registry, installer.provider(), false) {
-            Ok(m) => m,
-            Err(e) => {
-                out.error(e);
-                return exit_codes::USAGE;
-            }
-        }
-    };
-    if args.force && !sel.yes && !sel.dry_run && !confirm_force(out) {
+    operate(&args.selection, args.force, true, out)
+}
+
+fn operate(selection: &Selection, force: bool, remove: bool, out: &mut Output) -> i32 {
+    if selection.interactive && !std::io::stdin().is_terminal() {
+        out.error("--interactive needs a terminal; use --all or --only <ids> instead");
         return exit_codes::USAGE;
     }
-    let req = match request(scope, modules, sel.dry_run, args.force) {
-        Ok(r) => r,
-        Err(e) => {
-            out.error(e);
-            return exit_codes::INTERNAL;
+    if force && !selection.yes && !selection.dry_run && !confirm_force(out) {
+        return exit_codes::USAGE;
+    }
+    let registry = crate::modules::registry();
+    let mut requests = Vec::new();
+    let mut seen = std::collections::BTreeSet::new();
+    for provider in &selection.provider {
+        let mut sel = selection.clone();
+        sel.provider = vec![provider.to_lowercase()];
+        if !seen.insert(sel.provider[0].clone()) {
+            continue;
         }
-    };
-    let result = installer.uninstall(&req);
-    report(out, &result, sel.dry_run, "uninstall")
+        let (scope, installer) = match prepare(&sel, out) {
+            Ok(v) => v,
+            Err(code) => return code,
+        };
+        if sel.interactive {
+            let available = all_for_provider(&registry, installer.provider());
+            out.raw_err(format!(
+                "{} modules: {}\nEnter comma-separated module IDs (empty = all): ",
+                installer.provider(),
+                available.join(", ")
+            ));
+            let mut answer = String::new();
+            if std::io::stdin().lock().read_line(&mut answer).is_err() {
+                out.error("cannot read selection");
+                return exit_codes::USAGE;
+            }
+            if !answer.trim().is_empty() {
+                sel.only = answer
+                    .trim()
+                    .split(',')
+                    .map(|s| s.trim().to_string())
+                    .collect();
+                sel.all = false;
+                sel.except.clear();
+            }
+        }
+        let modules = if remove && sel.all {
+            Vec::new()
+        } else {
+            match resolve_modules(&sel, &registry, installer.provider(), !remove) {
+                Ok(v) => v,
+                Err(e) => {
+                    out.error(e);
+                    return exit_codes::USAGE;
+                }
+            }
+        };
+        if !remove && modules.is_empty() {
+            out.error("no module selected; use --all or --only <ids>");
+            return exit_codes::USAGE;
+        }
+        let req = match request(scope, modules, true, force) {
+            Ok(v) => v,
+            Err(e) => {
+                out.error(e);
+                return exit_codes::INTERNAL;
+            }
+        };
+        requests.push((installer, req));
+    }
+    let mut plan = InstallResult::default();
+    for (installer, req) in &requests {
+        let result = if remove {
+            installer.uninstall(req)
+        } else {
+            installer.install(req)
+        };
+        plan.actions.extend(result.actions);
+        plan.notes.extend(result.notes);
+        plan.conflicts.extend(result.conflicts);
+    }
+    let operation = if remove { "uninstall" } else { "install" };
+    if selection.dry_run || !plan.succeeded() {
+        return report(out, &plan, true, operation);
+    }
+    let mut result = InstallResult::default();
+    for (installer, mut req) in requests {
+        req.dry_run = false;
+        let step = if remove {
+            installer.uninstall(&req)
+        } else {
+            installer.install(&req)
+        };
+        let succeeded = step.succeeded();
+        result.actions.extend(step.actions);
+        result.notes.extend(step.notes);
+        result.conflicts.extend(step.conflicts);
+        if !succeeded {
+            result.notes.push("Earlier providers may already have completed; inspect status. Each provider operation rolls back its own failed writes.".into());
+            break;
+        }
+    }
+    report(out, &result, false, operation)
 }
 
 #[cfg(test)]

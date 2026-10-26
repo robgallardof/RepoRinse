@@ -119,7 +119,7 @@ fn foreign_failure_propagates_and_reporinse_does_not_run() {
     // The exit code itself is propagated by the dispatcher.
     let file = repo.path("msg.txt");
     std::fs::write(&file, "x\n").unwrap();
-    let mut cmd = std::process::Command::new("sh");
+    let mut cmd = support::shell();
     cmd.current_dir(&repo.dir)
         .arg(repo.hooks_dir().join("commit-msg"))
         .arg(&file);

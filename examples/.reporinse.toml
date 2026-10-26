@@ -1,0 +1,30 @@
+version = 1
+preset = "balanced"
+exclude = ["**/node_modules/**", "**/target/**", "**/dist/**", "vendor/**"]
+
+[providers]
+git = true
+claude = true
+codex = true
+gemini = true
+cursor = true
+
+[rules."git.ai-attribution"]
+mode = "fix"
+
+[rules."text.whitespace"]
+mode = "warn"
+honor_editorconfig = true
+
+[rules."agent.command-guard"]
+mode = "warn"
+deny = ["*git reset --hard*", "*git push --force*"]
+
+[rules."agent.path-scope"]
+mode = "warn"
+deny = [".git/**", "**/.git/**", "**/.env", ".env"]
+
+[rules."git.diff-scope"]
+mode = "warn"
+max_files = 25
+max_lines = 500

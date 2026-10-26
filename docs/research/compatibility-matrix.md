@@ -720,3 +720,15 @@ Exit codes other than 0 must not be used (undocumented). `Stop` is not registere
 5. Malformed / empty / 10 MB / deeply nested stdin → Allow (fail-open) with a sanitized stderr reason, never a panic.
 6. Pending items (`apply_patch` grammar, Cursor `Write` input, Gemini timeout, Codex crash semantics, git rebase hooks) stay
    `planned` until a captured real payload or live test exists.
+
+
+## Implementation verification addendum — 2026-10-26
+
+Claude/Codex/Gemini/Cursor parsing and decisions have contract tests in tests/adapter_contracts.rs.
+Installer restoration and drift checks are covered in tests/adapter_install.rs. Generated handler commands are
+executed in tests/adapter_e2e.rs, including binary paths with spaces, accents, apostrophes and `$`.
+This is synthetic protocol/subprocess verification, not a captured live agent session.
+
+Timeout units and tool events follow official pages re-opened during delivery. Gemini uses regex `.*` and neutral
+output `{}`. Cursor permission hooks require `permission: allow` as the neutral result. Claude and Codex never
+receive explicit allow decisions. Native Antigravity and undocumented patch/Write paths remain unverified.

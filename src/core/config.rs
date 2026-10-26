@@ -119,23 +119,206 @@ fn glob_matches(pattern: &str, path: &str) -> bool {
         .unwrap_or(false)
 }
 
-/// Loads the effective configuration for `repo_root` (or only user/built-ins when `None`).
-/// Current implementation: built-ins + CLI overrides; file layers land with the core-rules-engine workstream.
+#[derive(Debug, Default, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+struct FileConfig {
+    version: Option<u32>,
+    preset: Option<String>,
+    exclude: Option<Vec<String>>,
+    #[serde(default)]
+    providers: BTreeMap<String, bool>,
+    #[serde(default)]
+    rules: BTreeMap<String, toml::Table>,
+}
+
+fn problem(file: Option<&Path>, message: impl Into<String>) -> ConfigError {
+    ConfigError {
+        file: file.map(|p| p.display().to_string()),
+        message: message.into(),
+    }
+}
+
+fn read_layer(path: &Path) -> Result<Option<FileConfig>, ConfigError> {
+    let text = match std::fs::read_to_string(path) {
+        Ok(text) => text,
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        Err(e) => return Err(problem(Some(path), e.to_string())),
+    };
+    let layer: FileConfig =
+        toml::from_str(&text).map_err(|e| problem(Some(path), e.to_string()))?;
+    if layer.version.is_some_and(|v| v != 1) {
+        return Err(problem(
+            Some(path),
+            "unsupported configuration version (expected 1)",
+        ));
+    }
+    if let Some(preset) = &layer.preset {
+        validate_preset(preset).map_err(|e| problem(Some(path), e))?;
+    }
+    Ok(Some(layer))
+}
+
+pub fn validate_preset(preset: &str) -> Result<(), String> {
+    if matches!(preset, "minimal" | "balanced" | "strict" | "custom") {
+        Ok(())
+    } else {
+        Err(format!("unknown preset '{preset}'"))
+    }
+}
+
+fn validate_globs(patterns: &[String]) -> Result<(), String> {
+    for pattern in patterns {
+        globset::GlobBuilder::new(pattern)
+            .literal_separator(true)
+            .build()
+            .map_err(|e| format!("invalid exclusion '{pattern}': {e}"))?;
+    }
+    Ok(())
+}
+
+fn user_file() -> Option<std::path::PathBuf> {
+    use std::env::var_os;
+    use std::path::PathBuf;
+    if let Some(dir) = var_os("REPORINSE_CONFIG_HOME") {
+        return Some(PathBuf::from(dir).join("config.toml"));
+    }
+    if let Some(dir) = var_os("XDG_CONFIG_HOME") {
+        return Some(PathBuf::from(dir).join("reporinse/config.toml"));
+    }
+    if cfg!(windows)
+        && let Some(dir) = var_os("APPDATA")
+    {
+        return Some(PathBuf::from(dir).join("reporinse/config.toml"));
+    }
+    var_os("HOME")
+        .or_else(|| var_os("USERPROFILE"))
+        .map(|dir| PathBuf::from(dir).join(".config/reporinse/config.toml"))
+}
+
+fn merge_layer(
+    config: &mut EffectiveConfig,
+    registry: &RuleRegistry,
+    layer: FileConfig,
+    path: &Path,
+) -> Result<(), ConfigError> {
+    let origin = path.display().to_string();
+    if let Some(exclude) = layer.exclude {
+        validate_globs(&exclude).map_err(|e| problem(Some(path), e))?;
+        config.exclude = exclude;
+        config.origins.insert("exclude".into(), origin.clone());
+    }
+    for (provider, enabled) in layer.providers {
+        if !matches!(
+            provider.as_str(),
+            "git" | "claude" | "codex" | "gemini" | "cursor" | "antigravity"
+        ) {
+            return Err(problem(
+                Some(path),
+                format!("unknown provider '{provider}'"),
+            ));
+        }
+        config
+            .origins
+            .insert(format!("providers.{provider}"), origin.clone());
+        config.providers.insert(provider, enabled);
+    }
+    for (id, mut table) in layer.rules {
+        let rule = registry
+            .find(&id)
+            .ok_or_else(|| problem(Some(path), format!("unknown rule '{id}'")))?;
+        let mut settings = config.settings(&id);
+        if let Some(mode) = table.remove("mode") {
+            let mode = mode
+                .as_str()
+                .and_then(RuleMode::parse)
+                .ok_or_else(|| problem(Some(path), format!("invalid mode for '{id}'")))?;
+            if !rule.metadata().supports(mode) {
+                return Err(problem(Some(path), format!("unsupported mode for '{id}'")));
+            }
+            settings.mode = mode;
+            config
+                .origins
+                .insert(format!("rules.{id}.mode"), origin.clone());
+        }
+        if let Some(exclude) = table.remove("exclude") {
+            settings.exclude = exclude
+                .try_into()
+                .map_err(|e| problem(Some(path), format!("invalid exclude for '{id}': {e}")))?;
+            validate_globs(&settings.exclude).map_err(|e| problem(Some(path), e))?;
+            config
+                .origins
+                .insert(format!("rules.{id}.exclude"), origin.clone());
+        }
+        for (key, value) in table {
+            config
+                .origins
+                .insert(format!("rules.{id}.{key}"), origin.clone());
+            settings.options.insert(key, value);
+        }
+        let errors = rule.validate_options(&settings.options);
+        if !errors.is_empty() {
+            return Err(problem(Some(path), format!("{id}: {}", errors.join("; "))));
+        }
+        config.rules.insert(id, settings);
+    }
+    Ok(())
+}
+
+/// Loads built-ins, preset, user and repository layers, then CLI overrides.
 pub fn load(
     registry: &RuleRegistry,
-    _repo_root: Option<&Path>,
+    repo_root: Option<&Path>,
     overrides: &CliOverrides,
 ) -> Result<EffectiveConfig, ConfigError> {
+    let mut layers = Vec::new();
+    let paths = user_file()
+        .into_iter()
+        .chain(repo_root.map(|p| p.join(REPO_FILE)));
+    for path in paths {
+        if let Some(layer) = read_layer(&path)? {
+            layers.push((path, layer));
+        }
+    }
     let mut config = EffectiveConfig::built_in(registry);
-    if let Some(preset) = &overrides.preset {
-        config.preset = preset.clone();
+    let (preset, origin) = overrides
+        .preset
+        .as_ref()
+        .map(|p| (p.clone(), "cli".to_string()))
+        .or_else(|| {
+            layers.iter().rev().find_map(|(path, layer)| {
+                layer
+                    .preset
+                    .as_ref()
+                    .map(|p| (p.clone(), path.display().to_string()))
+            })
+        })
+        .unwrap_or_else(|| ("balanced".into(), "built-in".into()));
+    validate_preset(&preset).map_err(|e| problem(None, e))?;
+    for rule in registry.all() {
+        let m = rule.metadata();
+        let mode = match preset.as_str() {
+            "custom" => RuleMode::Off,
+            "minimal" if m.priority != super::model::Priority::P0 => RuleMode::Off,
+            "strict" if m.supports(RuleMode::Block) => RuleMode::Block,
+            _ => m.default_mode,
+        };
+        config.set(
+            m.id,
+            RuleSettings::with_mode(mode),
+            &format!("preset:{preset}"),
+        );
+    }
+    config.preset = preset;
+    config.origins.insert("preset".into(), origin);
+    for (path, layer) in layers {
+        merge_layer(&mut config, registry, layer, &path)?;
     }
     for (id, mode) in &overrides.modes {
-        if !registry.contains(id) {
-            return Err(ConfigError {
-                file: None,
-                message: format!("unknown rule '{id}'"),
-            });
+        let rule = registry
+            .find(id)
+            .ok_or_else(|| problem(None, format!("unknown rule '{id}'")))?;
+        if !rule.metadata().supports(*mode) {
+            return Err(problem(None, format!("unsupported mode for '{id}'")));
         }
         let mut settings = config.settings(id);
         settings.mode = *mode;

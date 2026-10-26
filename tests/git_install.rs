@@ -348,14 +348,14 @@ fn global_hooks_path_conflict_exits_4() {
 fn only_selection_and_partial_uninstall() {
     let sb = Sandbox::new();
     let repo = sb.repo("only");
-    // --all with everything excepted is an empty selection.
+    // Excluding every implemented Git rule is an empty selection.
     let out = repo.reporinse(&[
         "install",
         "--provider",
         "git",
         "--all",
         "--except",
-        "git.ai-attribution",
+        "git.ai-attribution,text.whitespace,text.invisible-unicode,git.diff-scope,git.dependency-watch,docs.agent-artifacts,code.duplicate-comments",
         "--yes",
     ]);
     assert_code(&out, 2);
@@ -370,7 +370,7 @@ fn only_selection_and_partial_uninstall() {
             .contains(&"git.ai-attribution".into())
     );
 
-    // Removing the only module that needs commit-msg removes the whole installation.
+    // Removing commit-message rules keeps the independently installed file rules.
     let out = repo.reporinse(&[
         "uninstall",
         "--provider",
@@ -381,6 +381,23 @@ fn only_selection_and_partial_uninstall() {
     ]);
     assert_code(&out, 0);
     assert!(!repo.hooks_dir().join("commit-msg").exists());
+    assert!(repo.hooks_dir().join("pre-commit").exists());
+    assert_eq!(
+        manifest(&repo)["modules"],
+        serde_json::json!([
+            "code.duplicate-comments",
+            "docs.agent-artifacts",
+            "git.dependency-watch",
+            "git.diff-scope",
+            "text.invisible-unicode",
+            "text.whitespace"
+        ])
+    );
+    assert_code(
+        &repo.reporinse(&["uninstall", "--provider", "git", "--all", "--yes"]),
+        0,
+    );
+    assert!(!repo.hooks_dir().join("pre-commit").exists());
     assert!(!repo.git_dir().join("reporinse").exists());
 }
 
@@ -394,12 +411,12 @@ fn cli_errors_have_documented_exit_codes() {
     let out = repo.reporinse(&[
         "install",
         "--provider",
-        "claude",
+        "antigravity",
         "--only",
         "git.ai-attribution",
     ]);
     assert_code(&out, 69);
-    assert!(stderr(&out).contains("not supported by this build yet"));
+    assert!(stderr(&out).contains("has no verified native installer"));
     assert_code(&repo.reporinse(&["install", "--provider", "nothing"]), 2);
     assert_code(&repo.reporinse(&["install", "--scope", "planet"]), 2);
     // Tests run without a TTY on stdin.
