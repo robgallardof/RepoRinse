@@ -37,6 +37,8 @@ Co-Authored-By: Claude <noreply@…>   ─▶   Co-Authored-By: Ana <ana@example
 Co-Authored-By: Ana <ana@example.com>
 ```
 
+<p align="center"><img src="assets/readme-builder/kit/wave.svg" alt="" width="100%" /></p>
+
 <a id="-install"></a>
 ## <img src="assets/readme-builder/icons/layers.svg" width="24" height="24" alt="" /> Install
 
@@ -146,6 +148,8 @@ Details: [docs/DOCKER.md](docs/DOCKER.md).
 Verify the real image and Compose service with `python scripts/test_docker.py`.
 It uses a temporary repository and checks staged files and message fixes without installing host hooks.
 
+<p align="center"><img src="assets/readme-builder/kit/wave.svg" alt="" width="100%" /></p>
+
 <a id="-quick-start-5-minutes"></a>
 ## <img src="assets/readme-builder/icons/rocket.svg" width="24" height="24" alt="" /> Quick start (5 minutes)
 
@@ -168,6 +172,8 @@ reporinse doctor
 ```
 
 From now on, every `git commit` removes known AI co-author trailers from the message and reviews the staged files.
+
+<p align="center"><img src="assets/readme-builder/kit/wave.svg" alt="" width="100%" /></p>
 
 <a id="-rules"></a>
 ## <img src="assets/readme-builder/icons/layers.svg" width="24" height="24" alt="" /> Rules
@@ -202,6 +208,8 @@ reporinse rule explain text.whitespace        # full documentation with examples
 
 Docs for each rule live in [`docs/rules/`](docs/rules/).
 
+<p align="center"><img src="assets/readme-builder/kit/wave.svg" alt="" width="100%" /></p>
+
 <a id="-checking"></a>
 ## <img src="assets/readme-builder/icons/layers.svg" width="24" height="24" alt="" /> Checking
 
@@ -225,6 +233,8 @@ Useful global flags: `--json` (machine-readable), `--quiet` (only blocking findi
 | `2` | Usage error (bad flag, unknown rule id) |
 | `3` | Configuration error |
 | `4` | Conflict (e.g. a file changed since analysis, `core.hooksPath` set globally) |
+
+<p align="center"><img src="assets/readme-builder/kit/wave.svg" alt="" width="100%" /></p>
 
 <a id="-fixing"></a>
 ## <img src="assets/readme-builder/icons/layers.svg" width="24" height="24" alt="" /> Fixing
@@ -266,6 +276,8 @@ reporinse fix --message .git/COMMIT_EDITMSG   # clean a commit message file in p
 - Avoid editing the same files at the same time: ordinary editors do not honor Git's index lock.
 
 </details>
+
+<p align="center"><img src="assets/readme-builder/kit/wave.svg" alt="" width="100%" /></p>
 
 <a id="-git-hooks"></a>
 ## <img src="assets/readme-builder/icons/layers.svg" width="24" height="24" alt="" /> Git hooks
@@ -347,6 +359,8 @@ reporinse uninstall --provider git --scope user --all --yes    # user scope
 Full details: [docs/integrations/git.md](docs/integrations/git.md).
 
 </details>
+
+<p align="center"><img src="assets/readme-builder/kit/wave.svg" alt="" width="100%" /></p>
 
 <a id="-agent-hooks-claude-codex-gemini-cursor"></a>
 ## <img src="assets/readme-builder/icons/bot.svg" width="24" height="24" alt="" /> Agent hooks (Claude, Codex, Gemini, Cursor)
@@ -449,6 +463,8 @@ Per-provider details: [Claude](docs/integrations/claude.md) · [Codex](docs/inte
 
 </details>
 
+<p align="center"><img src="assets/readme-builder/kit/wave.svg" alt="" width="100%" /></p>
+
 <a id="-configuration"></a>
 ## <img src="assets/readme-builder/icons/layers.svg" width="24" height="24" alt="" /> Configuration
 
@@ -500,6 +516,8 @@ reporinse config explain      # every effective value and where it came from
 
 Full reference: [docs/configuration/README.md](docs/configuration/README.md).
 
+<p align="center"><img src="assets/readme-builder/kit/wave.svg" alt="" width="100%" /></p>
+
 <a id="-troubleshooting"></a>
 ## <img src="assets/readme-builder/icons/layers.svg" width="24" height="24" alt="" /> Troubleshooting
 
@@ -511,6 +529,8 @@ Full reference: [docs/configuration/README.md](docs/configuration/README.md).
 | Uninstall refuses (drift) | A file changed after install. Review it, then `uninstall … --force` |
 | Unsure what a rule did | `reporinse rule explain <id>` or `reporinse check --verbose` |
 | Need it in CI / scripts | Add `--json` and use the exit codes |
+
+<p align="center"><img src="assets/readme-builder/kit/wave.svg" alt="" width="100%" /></p>
 
 <a id="-development"></a>
 ## <img src="assets/readme-builder/icons/code.svg" width="24" height="24" alt="" /> Development
@@ -528,6 +548,8 @@ CI runs on Windows, Linux and macOS. Before contributing, read [AGENTS.md](AGENT
 [CONTRIBUTING.md](CONTRIBUTING.md). What is verified and what is not:
 [docs/development/verification.md](docs/development/verification.md).
 
+<p align="center"><img src="assets/readme-builder/kit/wave.svg" alt="" width="100%" /></p>
+
 <a id="-more"></a>
 ## <img src="assets/readme-builder/icons/layers.svg" width="24" height="24" alt="" /> More
 
@@ -536,7 +558,7 @@ CI runs on Windows, Linux and macOS. Before contributing, read [AGENTS.md](AGENT
 
 <br/>
 
-<p align="center"><a href="#top">Back to top</a></p>
+<p align="center"><a href="#top"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/btn-back-to-top-outline-sm-dark.svg" /><img src="assets/readme-builder/kit/btn-back-to-top-outline-sm-light.svg" alt="Back to top" height="34" /></picture></a></p>
 
 <!-- readme-builder:signature:start -->
 <p align="center"><a href="https://github.com/robgallardof"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme/brand/signature-en-dark.svg" /><img src="assets/readme/brand/signature-en-light.svg" alt="RepoRinse / Roberto Gallardo" width="100%" /></picture></a></p>
