@@ -46,3 +46,10 @@ cargo run -- modules list           # run the CLI
 6. **No over-engineering.** No database, server, async runtime, plugin system or MCP server.
 7. **Docs follow code.** README and docs only describe commands that run in the current build.
 8. Commit messages: detailed, no AI attribution trailers (RepoRinse's own `git.ai-attribution` would remove them).
+
+## Commit language
+
+All new Git commit subjects and bodies must be written in English, including merge
+and squash messages. Keep the repository's existing message conventions.
+This applies to all contributors and coding agents, and only to new commits.
+Do not rewrite existing history to translate commit messages.

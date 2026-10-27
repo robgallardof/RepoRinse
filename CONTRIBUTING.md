@@ -9,3 +9,10 @@ Provider claims must link official documentation and have protocol contract test
 Do not change global settings or use real repositories in tests. See [AGENTS.md](AGENTS.md).
 
 Keep changes focused, describe observable behavior and test results, and omit AI attribution trailers.
+
+## Commit language
+
+All new Git commit subjects and bodies must be written in English, including merge
+and squash messages. Keep the repository's existing message conventions.
+This applies to all contributors and coding agents, and only to new commits.
+Do not rewrite existing history to translate commit messages.
