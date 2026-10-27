@@ -51,8 +51,13 @@ impl Sandbox {
             .tempdir()
             .expect("temp dir");
         let home = dir.path().join("home dir");
-        let reporinse_home = home.join("config").join("reporinse");
         std::fs::create_dir_all(&home).unwrap();
+        // macOS temp paths may start at /var -> /private/var. Give the isolated
+        // user home its real path so the installer's link rejection tests only
+        // links deliberately created by the test, not an OS directory alias.
+        #[cfg(unix)]
+        let home = home.canonicalize().expect("canonical isolated home");
+        let reporinse_home = home.join("config").join("reporinse");
         let gitconfig = home.join("gitconfig global");
         std::fs::write(
             &gitconfig,

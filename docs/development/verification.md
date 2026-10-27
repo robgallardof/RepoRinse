@@ -25,6 +25,18 @@ Docker (optional image), executed locally on Docker 29.8 (Windows host, Linux co
 `check --staged` on a bind mount owned by another UID, `fix --message` writing back to the host file and the
 Compose service with networking disabled. `install`/`uninstall` are intentionally not supported in containers.
 
+## Temporary home paths in CI — 2026-10-26
+
+The macOS job exposed an existing test-fixture issue: its temporary HOME used the
+system `/var` alias, so the installer correctly refused a symlinked settings path.
+Unix fixtures now canonicalize only their isolated test home before passing it to
+children. Production link rejection and the configured real user home are unchanged.
+
+Executed: Windows formatting, clippy and the full test suite passed; both adapter
+installation tests also passed in a Linux container with TMPDIR deliberately routed
+through a symlink. Docker uses a read-only source mount and a disposable build directory.
+The real macOS job is verified through GitHub Actions rather than claimed as a local run.
+
 ## Español
 
 Las verificaciones locales se ejecutan en Windows. CI de Linux/macOS está configurado, no ejecutado aquí.
