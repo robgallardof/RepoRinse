@@ -23,7 +23,7 @@ pub struct HookArgs {
     /// Only run these rule ids (written into the shims by `install --only`).
     #[arg(long, value_delimiter = ',')]
     pub only: Vec<String>,
-    /// Provider that invoked the hook: git, claude, codex, gemini, cursor.
+    /// Provider that invoked the hook: git, claude, codex, gemini, cursor, opencode, deepseek.
     pub provider: String,
     /// Hook/event name (e.g. commit-msg, pre-commit, PreToolUse).
     pub event: String,

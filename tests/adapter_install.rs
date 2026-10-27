@@ -94,3 +94,55 @@ fn user_scope_and_multi_provider_dry_run_are_isolated() {
     assert!(!repo.path(".claude").exists());
     assert!(!repo.hooks_dir().join("commit-msg").exists());
 }
+
+#[test]
+fn native_bridge_install_is_project_only_reversible_and_refuses_foreign_files() {
+    for (host, folder, plugin) in [
+        ("opencode", ".opencode/plugins", "reporinse.js"),
+        ("deepseek", ".dsh", "reporinse.mjs"),
+    ] {
+        let sb = Sandbox::new();
+        let repo = sb.repo("native bridge unicode spaces");
+        let filename = format!("{folder}/{plugin}");
+        assert_code(
+            &repo.reporinse(&["install", "--provider", host, "--all", "--dry-run"]),
+            0,
+        );
+        assert!(!repo.path(&filename).exists());
+        repo.write(&format!("{folder}/foreign.js"), "// keep me");
+        assert_code(
+            &repo.reporinse(&["install", "--provider", host, "--all", "--yes"]),
+            0,
+        );
+        let installed = std::fs::read(repo.path(&filename)).unwrap();
+        assert_code(
+            &repo.reporinse(&["install", "--provider", host, "--all", "--yes"]),
+            0,
+        );
+        assert_eq!(std::fs::read(repo.path(&filename)).unwrap(), installed);
+        repo.write(&filename, "// changed by user");
+        assert_code(
+            &repo.reporinse(&["uninstall", "--provider", host, "--all", "--yes"]),
+            4,
+        );
+        repo.write(&filename, &installed);
+        assert_code(
+            &repo.reporinse(&["uninstall", "--provider", host, "--all", "--yes"]),
+            0,
+        );
+        assert!(!repo.path(&filename).exists());
+        assert_eq!(
+            std::fs::read_to_string(repo.path(&format!("{folder}/foreign.js"))).unwrap(),
+            "// keep me"
+        );
+        repo.write(&filename, "// foreign plugin");
+        assert_code(
+            &repo.reporinse(&["install", "--provider", host, "--all", "--yes"]),
+            4,
+        );
+        assert_eq!(
+            std::fs::read_to_string(repo.path(&filename)).unwrap(),
+            "// foreign plugin"
+        );
+    }
+}

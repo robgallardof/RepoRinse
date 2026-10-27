@@ -8,7 +8,7 @@ use serde_json::{Value, json};
 pub struct HostAdapter(pub &'static str);
 pub fn supported(provider: &str, event: &str) -> bool {
     match provider {
-        "claude" | "codex" => matches!(
+        "claude" | "codex" | "opencode" | "deepseek" => matches!(
             event,
             "PreToolUse" | "PostToolUse" | "SessionStart" | "Stop"
         ),
@@ -140,11 +140,13 @@ impl Adapter for HostAdapter {
         let warning = decision != HookDecision::Allow && !message.is_empty();
         let provider = event.provider.as_str();
         let payload = match provider {
-            "claude" | "codex" if block => Some(
+            "claude" | "codex" | "opencode" | "deepseek" if block => Some(
                 json!({"hookSpecificOutput":{"hookEventName":event.original_event,"permissionDecision":"deny","permissionDecisionReason":message}}),
             ),
-            "claude" | "codex" if warning => Some(json!({"systemMessage":message})),
-            "claude" | "codex" => None,
+            "claude" | "codex" | "opencode" | "deepseek" if warning => {
+                Some(json!({"systemMessage":message}))
+            }
+            "claude" | "codex" | "opencode" | "deepseek" => None,
             "gemini" if block => {
                 Some(json!({"decision":"deny","reason":message,"systemMessage":message}))
             }

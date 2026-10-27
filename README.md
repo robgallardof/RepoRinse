@@ -543,3 +543,9 @@ CI runs on Windows, Linux and macOS. Before contributing, read [AGENTS.md](AGENT
 <br/>
 
 <img src="assets/readme/footer-en.svg" alt="RepoRinse" width="100%" />
+
+## OpenCode and DeepSeek Harness
+
+Native, project-scoped bridges support explicit command/path blocking before tools run.
+Use `reporinse install --provider opencode,deepseek --all --dry-run` to preview.
+[Setup, tested versions, limits and integration evidence](docs/integrations/opencode-deepseek.md).

@@ -36,6 +36,8 @@ fn cli_blocks_configured_actions_and_does_not_execute_commands() {
         "version=1\n[rules.\"agent.command-guard\"]\nmode=\"block\"\ndeny=[\"*never-run-this*\"]\n",
     );
     for (host, event, tool) in [
+        ("opencode", "PreToolUse", "Bash"),
+        ("deepseek", "PreToolUse", "Bash"),
         ("claude", "PreToolUse", "Bash"),
         ("codex", "PreToolUse", "Bash"),
         ("gemini", "BeforeTool", "run_shell_command"),

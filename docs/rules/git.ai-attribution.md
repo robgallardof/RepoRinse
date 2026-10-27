@@ -207,3 +207,5 @@ tres caracteres literales (así `*` jamás borra todas las líneas).
   agente; usa apellido o `policy = "warn-only"`.
 - `Co-authored-by: Claude` sin dirección se elimina: un trailer válido de una persona lleva dirección.
 - `git commit --no-verify` omite los hooks; es una ayuda de limpieza, no un control de seguridad.
+
+OpenCode, DeepSeek and DeepSeek Harness are recognized exact agent display names and standalone footer products. Human co-authors with different names remain intact. Real Git commit coverage: `opencode_and_deepseek_commit_trailers_are_removed_but_humans_survive`.

@@ -15,7 +15,9 @@ static COMMAND: RuleMetadata = RuleMetadata {
     modes: &[RuleMode::Warn, RuleMode::Block],
     default_mode: RuleMode::Warn,
     targets: &[TargetKind::AgentEvent],
-    providers: &["claude", "codex", "gemini", "cursor", "cli"],
+    providers: &[
+        "claude", "codex", "gemini", "cursor", "opencode", "deepseek", "cli",
+    ],
 };
 static PATH: RuleMetadata = RuleMetadata {
     id: "agent.path-scope",

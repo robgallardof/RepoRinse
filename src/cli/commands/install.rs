@@ -21,7 +21,7 @@ pub struct Selection {
     /// Exclude these module ids from --all.
     #[arg(long, value_delimiter = ',', requires = "all")]
     pub except: Vec<String>,
-    /// Providers: git, claude, codex, gemini, cursor (comma separated).
+    /// Providers: git, claude, codex, gemini, cursor, opencode, deepseek (comma separated).
     #[arg(long, value_delimiter = ',', default_value = "git")]
     pub provider: Vec<String>,
     /// repo or user (alias: global).

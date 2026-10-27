@@ -28,7 +28,7 @@ pub struct AdapterResponse {
 
 /// Translates one host's hook protocol to `NormalizedEvent` and back.
 pub trait Adapter: Send + Sync {
-    /// claude, codex, gemini, cursor.
+    /// claude, codex, gemini, cursor, opencode, deepseek.
     fn provider(&self) -> &'static str;
 
     /// Parses the host's stdin payload. Err carries a sanitized reason.

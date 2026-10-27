@@ -20,7 +20,7 @@ struct Manifest {
     installed_hash: String,
     modules: Vec<String>,
 }
-fn digest(bytes: &[u8]) -> String {
+pub(super) fn digest(bytes: &[u8]) -> String {
     use sha2::{Digest, Sha256};
     Sha256::digest(bytes)
         .iter()
@@ -66,7 +66,7 @@ fn locations(
         directory.join("reporinse-manifest.json"),
     ))
 }
-fn safe_path(path: &Path) -> Result<(), String> {
+pub(super) fn safe_path(path: &Path) -> Result<(), String> {
     let mut cursor = Some(path);
     while let Some(p) = cursor {
         match fs::symlink_metadata(p) {
@@ -80,7 +80,7 @@ fn safe_path(path: &Path) -> Result<(), String> {
     }
     Ok(())
 }
-fn read(path: &Path) -> Result<Option<Vec<u8>>, String> {
+pub(super) fn read(path: &Path) -> Result<Option<Vec<u8>>, String> {
     safe_path(path)?;
     match fs::metadata(path) {
         Ok(m) if m.len() > 1024 * 1024 => return Err("settings or manifest exceeds 1 MiB".into()),

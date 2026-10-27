@@ -732,3 +732,15 @@ This is synthetic protocol/subprocess verification, not a captured live agent se
 Timeout units and tool events follow official pages re-opened during delivery. Gemini uses regex `.*` and neutral
 output `{}`. Cursor permission hooks require `permission: allow` as the neutral result. Claude and Codex never
 receive explicit allow decisions. Native Antigravity and undocumented patch/Write paths remain unverified.
+
+## OpenCode 1.x / DeepSeek Harness — 2026-10-26
+
+| Provider | Contract | Evidence | Limits |
+|---|---|---|---|
+| OpenCode 1.19.4 | [official plugins](https://opencode.ai/docs/plugins/): before/after tool callbacks; throw to veto | installed callbacks invoke real RepoRinse child; real OpenCode startup | 2.x API excluded; live model turn NOT EXECUTED |
+| DeepSeek Harness 0.2.1-rc.2 | installed official `dsh-tools` TypeScript declarations: `tools/pre-execute`, `PreToolDecision.kind=deny` | actual Cordis + ToolRuntime dispatch with installed bridge; denied body never invoked | project root pinned; live inference NOT EXECUTED |
+
+The generated bridge's `PreToolUse`/`PostToolUse` JSON is RepoRinse's internal adapter protocol,
+not a claim that either host speaks Claude hooks natively. Official API source:
+[DeepSeek tools](https://github.com/deepseek-ai/deepseek-harness/tree/master/packages/core/tools).
+Setup and failures: [bridge guide](../integrations/opencode-deepseek.md).

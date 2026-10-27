@@ -363,7 +363,7 @@ pub enum EventAction {
 /// rules never see the raw payload. Command text and paths are data, never executed by RepoRinse.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct NormalizedEvent {
-    /// claude, codex, gemini, cursor.
+    /// claude, codex, gemini, cursor, opencode, deepseek.
     pub provider: String,
     /// Host event name, e.g. `PreToolUse`, `beforeShellExecution`.
     pub original_event: String,

@@ -344,3 +344,17 @@ fn pre_commit_shim_runs_through_git_and_chains() {
         Some(5)
     );
 }
+
+#[test]
+fn opencode_and_deepseek_commit_trailers_are_removed_but_humans_survive() {
+    let sb = Sandbox::new();
+    let repo = sb.repo("new agent identities");
+    install_only(&repo);
+    for name in ["OpenCode", "DeepSeek", "DeepSeek Harness"] {
+        repo.commit_ok(&format!("feat: support agent\n\nGenerated with {name}\n\nCo-Authored-By: {name} <agent@example.invalid>\nCo-Authored-By: Ana <ana@example.invalid>\n"), &[]);
+        assert_eq!(
+            repo.last_message(),
+            "feat: support agent\n\nCo-Authored-By: Ana <ana@example.invalid>\n"
+        );
+    }
+}
