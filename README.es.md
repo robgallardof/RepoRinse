@@ -14,21 +14,24 @@
 ![Plataformas](https://img.shields.io/badge/plataformas-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)
 ![Offline](https://img.shields.io/badge/ejecuci%C3%B3n-offline%20%C2%B7%20sin%20telemetr%C3%ADa-success)
 
-[English](README.md) · [Reglas](#-reglas) · [Instalación](#-instalación) · [Hooks de Git](#-hooks-de-git) ·
-[Hooks de agentes](#-hooks-de-agentes-claude-codex-gemini-cursor) · [Configuración](#-configuraci%C3%B3n)
+<!-- kit:nav -->
+<p align="center"><a href="#-inicio-rápido-5-minutos"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/nav-es-01-dark.svg" /><img src="assets/readme-builder/kit/nav-es-01-light.svg" alt="Inicio rápido" height="44" /></picture></a>&nbsp;
+<a href="#-instalación"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/nav-es-02-dark.svg" /><img src="assets/readme-builder/kit/nav-es-02-light.svg" alt="Instalación" height="34" /></picture></a>&nbsp;
+<a href="#-reglas"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/nav-es-03-dark.svg" /><img src="assets/readme-builder/kit/nav-es-03-light.svg" alt="Reglas" height="34" /></picture></a>&nbsp;
+<a href="#-hooks-de-git"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/nav-es-04-dark.svg" /><img src="assets/readme-builder/kit/nav-es-04-light.svg" alt="Hooks de Git" height="34" /></picture></a>&nbsp;
+<a href="#-instalación-retirada-y-compatibilidad"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/nav-es-05-dark.svg" /><img src="assets/readme-builder/kit/nav-es-05-light.svg" alt="Agentes" height="34" /></picture></a>&nbsp;
+<a href="#-configuración"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/nav-es-06-dark.svg" /><img src="assets/readme-builder/kit/nav-es-06-light.svg" alt="Configuración" height="34" /></picture></a>&nbsp;
+<a href="README.md"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/nav-es-07-dark.svg" /><img src="assets/readme-builder/kit/nav-es-07-light.svg" alt="English" height="34" /></picture></a></p>
+<!-- /kit:nav -->
 
 </div>
 
 <a id="-por-qué-reporinse"></a>
 ## <img src="assets/readme-builder/icons/layers.svg" width="24" height="24" alt="" /> Por qué RepoRinse
 
-| | |
-|---|---|
-| <img src="assets/readme-builder/icons/lock.svg" width="20" height="20" alt="" /> **Solo local** | Sin llamadas a IA, sin red, sin telemetría. Es un motor de reglas, no un detector de IA. |
-| <img src="assets/readme-builder/icons/target.svg" width="20" height="20" alt="" /> **Determinista** | La misma entrada siempre da la misma salida. Las correcciones son idempotentes: `fix(fix(x)) == fix(x)`. |
-| <img src="assets/readme-builder/icons/shield.svg" width="20" height="20" alt="" /> **Seguro por defecto** | `check` nunca escribe. Las correcciones conservan codificación, BOM y saltos de línea, y se rechazan si el archivo cambió. |
-| <img src="assets/readme-builder/icons/users.svg" width="20" height="20" alt="" /> **Respetuoso** | Los hooks de Git existentes siguen funcionando, los ajustes de agentes se combinan y la desinstalación restaura los bytes originales. |
-| <img src="assets/readme-builder/icons/users.svg" width="20" height="20" alt="" /> **Respeta a las personas** | Quita las líneas `Co-Authored-By` de agentes de IA conocidos y deja intactos a los coautores humanos. |
+<!-- kit:why -->
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/why-es-dark.svg" /><img src="assets/readme-builder/kit/why-es-light.svg" alt="Solo local: Sin llamadas a IA, sin red, sin telemetría. Un motor de reglas, no un detector de IA. · Determinista: Misma entrada, misma salida. Las correcciones son idempotentes. · Seguro por defecto: check nunca escribe. Las correcciones conservan codificación, BOM y saltos. · Respetuoso: Tus hooks siguen corriendo. Desinstalar restaura los bytes originales. · Respeta personas: Quita los Co-Authored-By de IA y deja a los coautores humanos." width="100%" /></picture></p>
+<!-- /kit:why -->
 
 ```text
 feat: add parser                         feat: add parser
@@ -36,6 +39,8 @@ feat: add parser                         feat: add parser
 Co-Authored-By: Claude <noreply@…>   ─▶   Co-Authored-By: Ana <ana@example.com>
 Co-Authored-By: Ana <ana@example.com>
 ```
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme/diagrams/how-it-works-es-dark.svg" /><img src="assets/readme/diagrams/how-it-works-es-light.svg" alt="Cómo funciona RepoRinse: instalar una vez, agregar los hooks de Git, revisar a los agentes antes de actuar, revisar cada commit y quitar los trailers de IA" width="100%" /></picture></p>
 
 <p align="center"><img src="assets/readme-builder/kit/wave.svg" alt="" width="100%" /></p>
 
@@ -365,22 +370,30 @@ Detalles completos: [docs/integrations/git.md](docs/integrations/git.md).
 
 <p align="center"><img src="assets/readme-builder/kit/wave.svg" alt="" width="100%" /></p>
 
+<a id="-instalación-retirada-y-compatibilidad"></a>
 <a id="-hooks-de-agentes-claude-codex-gemini-cursor"></a>
-## <img src="assets/readme-builder/icons/bot.svg" width="24" height="24" alt="" /> Hooks de agentes (Claude, Codex, Gemini, Cursor)
+## <img src="assets/readme-builder/icons/bot.svg" width="24" height="24" alt="" /> Instalación, retirada y compatibilidad
 
 RepoRinse se conecta a los sistemas de hooks nativos de los agentes de código para **avisar o bloquear** los
 comandos y rutas que pongas en tu política.
 
 ### Proveedores soportados
 
-| Proveedor | `--provider` | Eventos | Archivo (alcance repo) | Después de instalar |
-|---|---|---|---|---|
-| Claude Code | `claude` | PreToolUse, PostToolUse | `.claude/settings.json` | Recarga ajustes / reinicia la sesión |
-| Codex | `codex` | PreToolUse, PostToolUse | `.codex/hooks.json` | Revisa y confía en cada hook en `/hooks` |
-| Gemini CLI | `gemini` | BeforeTool, AfterTool | `.gemini/settings.json` | Recarga ajustes / reinicia la sesión |
-| Cursor | `cursor` | beforeShellExecution, beforeReadFile, afterFileEdit | `.cursor/hooks.json` | El workspace debe ser de confianza |
-| Antigravity | — | Solo hooks de Git | — | Usa `--provider git` |
+Todos los proveedores se instalan y se quitan con los mismos dos comandos; `--dry-run` muestra el plan antes y
+`--scope user` escribe en tu carpeta personal en vez del repositorio.
 
+| Proveedor | `--provider` | Eventos | Archivo (alcance repo) | Quitar | Verificado |
+|---|---|---|---|---|---|
+| Claude Code | `claude` | PreToolUse, PostToolUse | `.claude/settings.json` | `uninstall --provider claude --all --yes` | Los handlers generados corren en pruebas |
+| Codex | `codex` | PreToolUse, PostToolUse | `.codex/hooks.json` | `uninstall --provider codex --all --yes` | Los handlers corren en pruebas; confírmalos en `/hooks` |
+| Gemini CLI | `gemini` | BeforeTool, AfterTool | `.gemini/settings.json` | `uninstall --provider gemini --all --yes` | Los handlers generados corren en pruebas |
+| Cursor | `cursor` | beforeShellExecution, beforeReadFile, afterFileEdit | `.cursor/hooks.json` | `uninstall --provider cursor --all --yes` | Los handlers generados corren en pruebas |
+| OpenCode 1.x | `opencode` | tool.execute.before, tool.execute.after | `.opencode/plugins/reporinse.js` | `uninstall --provider opencode --all --yes` | Hecho para la API de plugins 1.19.4 |
+| DeepSeek Harness | `deepseek` | tools/pre-execute | `.dsh/reporinse.cordis.yml` | `uninstall --provider deepseek --all --yes` | Hecho para 0.2.1-rc.2 |
+| Antigravity | — | Solo hooks de Git | — | — | Sin hooks nativos |
+
+Todavía no se afirma ninguna sesión real dentro de Claude, Codex, Gemini o Cursor; la confianza de hooks y los
+tiempos de espera del host faltan por probar en las apps reales ([notas de verificación](docs/development/verification.md)).
 
 ### OpenCode y DeepSeek Harness
 
@@ -462,11 +475,17 @@ reporinse uninstall --provider claude,codex,gemini,cursor --all --yes
 - El adaptador de Claude también deja vacías las cadenas de atribución de commits/PR en sus ajustes (se restauran al
   desinstalar).
 
-Detalles por proveedor: [Claude](docs/integrations/claude.md) · [Codex](docs/integrations/codex.md) ·
-[Gemini](docs/integrations/gemini.md) · [Cursor](docs/integrations/cursor.md) ·
-[Antigravity](docs/integrations/antigravity.md)
 
 </details>
+
+<!-- kit:agent-links -->
+<p align="center"><a href="docs/research/compatibility-matrix.md"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/agent-links-es-01-dark.svg" /><img src="assets/readme-builder/kit/agent-links-es-01-light.svg" alt="Matriz de compatibilidad" height="44" /></picture></a>&nbsp;
+<a href="docs/integrations/claude.md"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/agent-links-es-02-dark.svg" /><img src="assets/readme-builder/kit/agent-links-es-02-light.svg" alt="Claude" height="34" /></picture></a>&nbsp;
+<a href="docs/integrations/codex.md"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/agent-links-es-03-dark.svg" /><img src="assets/readme-builder/kit/agent-links-es-03-light.svg" alt="Codex" height="34" /></picture></a>&nbsp;
+<a href="docs/integrations/gemini.md"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/agent-links-es-04-dark.svg" /><img src="assets/readme-builder/kit/agent-links-es-04-light.svg" alt="Gemini" height="34" /></picture></a>&nbsp;
+<a href="docs/integrations/cursor.md"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/agent-links-es-05-dark.svg" /><img src="assets/readme-builder/kit/agent-links-es-05-light.svg" alt="Cursor" height="34" /></picture></a>&nbsp;
+<a href="docs/integrations/opencode-deepseek.md"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/agent-links-es-06-dark.svg" /><img src="assets/readme-builder/kit/agent-links-es-06-light.svg" alt="OpenCode · DeepSeek" height="34" /></picture></a></p>
+<!-- /kit:agent-links -->
 
 <p align="center"><img src="assets/readme-builder/kit/wave.svg" alt="" width="100%" /></p>
 
@@ -558,8 +577,14 @@ La CI corre en Windows, Linux y macOS. Antes de contribuir lee [AGENTS.md](AGENT
 <a id="-más"></a>
 ## <img src="assets/readme-builder/icons/layers.svg" width="24" height="24" alt="" /> Más
 
-[Configuración](docs/configuration/README.md) · [Reglas](docs/rules/) · [Integraciones](docs/integrations/) ·
-[Seguridad](SECURITY.md) · [Cambios](CHANGELOG.md) · [Licencia (MIT)](LICENSE)
+<!-- kit:more -->
+<p align="center"><a href="docs/configuration/README.md"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/more-es-01-dark.svg" /><img src="assets/readme-builder/kit/more-es-01-light.svg" alt="Configuración" height="34" /></picture></a>&nbsp;
+<a href="docs/rules/"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/more-es-02-dark.svg" /><img src="assets/readme-builder/kit/more-es-02-light.svg" alt="Reglas" height="34" /></picture></a>&nbsp;
+<a href="docs/integrations/"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/more-es-03-dark.svg" /><img src="assets/readme-builder/kit/more-es-03-light.svg" alt="Integraciones" height="34" /></picture></a>&nbsp;
+<a href="SECURITY.md"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/more-es-04-dark.svg" /><img src="assets/readme-builder/kit/more-es-04-light.svg" alt="Seguridad" height="34" /></picture></a>&nbsp;
+<a href="CHANGELOG.md"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/more-es-05-dark.svg" /><img src="assets/readme-builder/kit/more-es-05-light.svg" alt="Cambios" height="34" /></picture></a>&nbsp;
+<a href="LICENSE"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/more-es-06-dark.svg" /><img src="assets/readme-builder/kit/more-es-06-light.svg" alt="Licencia (MIT)" height="34" /></picture></a></p>
+<!-- /kit:more -->
 
 <br/>
 

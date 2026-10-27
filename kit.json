@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "theme": "nebula",
+  "assets": "assets/readme-builder/kit",
+  "documents": {"README.md": "en", "README.es.md": "es"},
+  "blocks": [
+    {"id": "nav", "type": "buttons", "items": [
+      {"label": {"en": "Quick start", "es": "Inicio rápido"}, "href": {"en": "#-quick-start-5-minutes", "es": "#-inicio-rápido-5-minutos"}, "icon": "rocket", "variant": "primary"},
+      {"label": {"en": "Install", "es": "Instalación"}, "href": {"en": "#-install", "es": "#-instalación"}, "icon": "download", "small": true},
+      {"label": {"en": "Rules", "es": "Reglas"}, "href": {"en": "#-rules", "es": "#-reglas"}, "icon": "check", "small": true},
+      {"label": {"en": "Git hooks", "es": "Hooks de Git"}, "href": {"en": "#-git-hooks", "es": "#-hooks-de-git"}, "icon": "branch", "small": true},
+      {"label": {"en": "Agent setup", "es": "Agentes"}, "href": {"en": "#-agent-setup-removal-and-compatibility", "es": "#-instalación-retirada-y-compatibilidad"}, "icon": "bot", "small": true},
+      {"label": {"en": "Configuration", "es": "Configuración"}, "href": {"en": "#-configuration", "es": "#-configuración"}, "icon": "settings", "small": true},
+      {"label": {"en": "Español", "es": "English"}, "href": {"en": "README.es.md", "es": "README.md"}, "icon": "globe", "small": true}
+    ]},
+    {"id": "why", "type": "bento", "columns": 3, "cells": [
+      {"span": 2, "icon": "lock", "kicker": {"en": "Offline", "es": "Offline"}, "title": {"en": "Local only", "es": "Solo local"},
+       "text": {"en": "No AI calls, no network, no telemetry at runtime. A rule engine, not an AI detector.", "es": "Sin llamadas a IA, sin red, sin telemetría. Un motor de reglas, no un detector de IA."}},
+      {"icon": "target", "kicker": {"en": "Output", "es": "Salida"}, "title": {"en": "Deterministic", "es": "Determinista"},
+       "text": {"en": "Same input, same output. Fixes are idempotent.", "es": "Misma entrada, misma salida. Las correcciones son idempotentes."}},
+      {"icon": "shield", "kicker": {"en": "Writes", "es": "Escritura"}, "title": {"en": "Safe by default", "es": "Seguro por defecto"},
+       "text": {"en": "check never writes. Fixes keep encoding, BOM and line endings.", "es": "check nunca escribe. Las correcciones conservan codificación, BOM y saltos."}},
+      {"icon": "repeat", "kicker": {"en": "Hooks", "es": "Hooks"}, "title": {"en": "Respectful", "es": "Respetuoso"},
+       "text": {"en": "Existing hooks keep running. Uninstall restores the original bytes.", "es": "Tus hooks siguen corriendo. Desinstalar restaura los bytes originales."}},
+      {"icon": "users", "kicker": {"en": "Commits", "es": "Commits"}, "title": {"en": "Keeps humans", "es": "Respeta personas"},
+       "text": {"en": "Drops AI Co-Authored-By lines and keeps human co-authors.", "es": "Quita los Co-Authored-By de IA y deja a los coautores humanos."}}
+    ]},
+    {"id": "agent-links", "type": "buttons", "items": [
+      {"label": {"en": "Compatibility matrix", "es": "Matriz de compatibilidad"}, "href": "docs/research/compatibility-matrix.md", "icon": "check", "variant": "primary", "trailing": true},
+      {"label": "Claude", "href": "docs/integrations/claude.md", "icon": "bot", "small": true},
+      {"label": "Codex", "href": "docs/integrations/codex.md", "icon": "bot", "small": true},
+      {"label": "Gemini", "href": "docs/integrations/gemini.md", "icon": "bot", "small": true},
+      {"label": "Cursor", "href": "docs/integrations/cursor.md", "icon": "bot", "small": true},
+      {"label": "OpenCode · DeepSeek", "href": "docs/integrations/opencode-deepseek.md", "icon": "bot", "small": true}
+    ]},
+    {"id": "more", "type": "buttons", "items": [
+      {"label": {"en": "Configuration", "es": "Configuración"}, "href": "docs/configuration/README.md", "icon": "settings", "small": true},
+      {"label": {"en": "Rules", "es": "Reglas"}, "href": "docs/rules/", "icon": "check", "small": true},
+      {"label": {"en": "Integrations", "es": "Integraciones"}, "href": "docs/integrations/", "icon": "link", "small": true},
+      {"label": {"en": "Security", "es": "Seguridad"}, "href": "SECURITY.md", "icon": "shield", "small": true},
+      {"label": {"en": "Changelog", "es": "Cambios"}, "href": "CHANGELOG.md", "icon": "file", "small": true},
+      {"label": {"en": "License (MIT)", "es": "Licencia (MIT)"}, "href": "LICENSE", "icon": "book", "small": true}
+    ]}
+  ]
+}

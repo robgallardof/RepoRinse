@@ -14,21 +14,24 @@
 ![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)
 ![Offline](https://img.shields.io/badge/runtime-offline%20%C2%B7%20no%20telemetry-success)
 
-[Español](README.es.md) · [Rules](#-rules) · [Install](#-install) · [Git hooks](#-git-hooks) ·
-[Agent hooks](#-agent-hooks-claude-codex-gemini-cursor) · [Configuration](#-configuration)
+<!-- kit:nav -->
+<p align="center"><a href="#-quick-start-5-minutes"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/nav-en-01-dark.svg" /><img src="assets/readme-builder/kit/nav-en-01-light.svg" alt="Quick start" height="44" /></picture></a>&nbsp;
+<a href="#-install"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/nav-en-02-dark.svg" /><img src="assets/readme-builder/kit/nav-en-02-light.svg" alt="Install" height="34" /></picture></a>&nbsp;
+<a href="#-rules"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/nav-en-03-dark.svg" /><img src="assets/readme-builder/kit/nav-en-03-light.svg" alt="Rules" height="34" /></picture></a>&nbsp;
+<a href="#-git-hooks"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/nav-en-04-dark.svg" /><img src="assets/readme-builder/kit/nav-en-04-light.svg" alt="Git hooks" height="34" /></picture></a>&nbsp;
+<a href="#-agent-setup-removal-and-compatibility"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/nav-en-05-dark.svg" /><img src="assets/readme-builder/kit/nav-en-05-light.svg" alt="Agent setup" height="34" /></picture></a>&nbsp;
+<a href="#-configuration"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/nav-en-06-dark.svg" /><img src="assets/readme-builder/kit/nav-en-06-light.svg" alt="Configuration" height="34" /></picture></a>&nbsp;
+<a href="README.es.md"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/nav-en-07-dark.svg" /><img src="assets/readme-builder/kit/nav-en-07-light.svg" alt="Español" height="34" /></picture></a></p>
+<!-- /kit:nav -->
 
 </div>
 
 <a id="-why-reporinse"></a>
 ## <img src="assets/readme-builder/icons/layers.svg" width="24" height="24" alt="" /> Why RepoRinse
 
-| | |
-|---|---|
-| <img src="assets/readme-builder/icons/lock.svg" width="20" height="20" alt="" /> **Local only** | No AI calls, no network, no telemetry at runtime. It is a rule engine, not an AI detector. |
-| <img src="assets/readme-builder/icons/target.svg" width="20" height="20" alt="" /> **Deterministic** | The same input always produces the same output. Fixes are idempotent: `fix(fix(x)) == fix(x)`. |
-| <img src="assets/readme-builder/icons/shield.svg" width="20" height="20" alt="" /> **Safe by default** | `check` never writes. Fixes preserve encoding, BOM and line endings, and are refused if the file changed. |
-| <img src="assets/readme-builder/icons/users.svg" width="20" height="20" alt="" /> **Respectful** | Existing Git hooks keep running, agent settings are merged, and uninstall restores the original bytes. |
-| <img src="assets/readme-builder/icons/users.svg" width="20" height="20" alt="" /> **Keeps humans** | Removes `Co-Authored-By` lines of known AI agents and leaves human co-authors untouched. |
+<!-- kit:why -->
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/why-en-dark.svg" /><img src="assets/readme-builder/kit/why-en-light.svg" alt="Local only: No AI calls, no network, no telemetry at runtime. A rule engine, not an AI detector. · Deterministic: Same input, same output. Fixes are idempotent. · Safe by default: check never writes. Fixes keep encoding, BOM and line endings. · Respectful: Existing hooks keep running. Uninstall restores the original bytes. · Keeps humans: Drops AI Co-Authored-By lines and keeps human co-authors." width="100%" /></picture></p>
+<!-- /kit:why -->
 
 ```text
 feat: add parser                         feat: add parser
@@ -36,6 +39,8 @@ feat: add parser                         feat: add parser
 Co-Authored-By: Claude <noreply@…>   ─▶   Co-Authored-By: Ana <ana@example.com>
 Co-Authored-By: Ana <ana@example.com>
 ```
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme/diagrams/how-it-works-en-dark.svg" /><img src="assets/readme/diagrams/how-it-works-en-light.svg" alt="How RepoRinse works: install once, add the Git hooks, agents are checked before tools, each commit is checked and AI trailers are removed" width="100%" /></picture></p>
 
 <p align="center"><img src="assets/readme-builder/kit/wave.svg" alt="" width="100%" /></p>
 
@@ -362,22 +367,30 @@ Full details: [docs/integrations/git.md](docs/integrations/git.md).
 
 <p align="center"><img src="assets/readme-builder/kit/wave.svg" alt="" width="100%" /></p>
 
+<a id="-agent-setup-removal-and-compatibility"></a>
 <a id="-agent-hooks-claude-codex-gemini-cursor"></a>
-## <img src="assets/readme-builder/icons/bot.svg" width="24" height="24" alt="" /> Agent hooks (Claude, Codex, Gemini, Cursor)
+## <img src="assets/readme-builder/icons/bot.svg" width="24" height="24" alt="" /> Agent setup, removal and compatibility
 
 RepoRinse can plug into the native hook systems of coding agents to **warn about or block** commands and file
 paths you list in your policy.
 
 ### Supported providers
 
-| Provider | `--provider` | Events | File written (repo scope) | After installing |
-|---|---|---|---|---|
-| Claude Code | `claude` | PreToolUse, PostToolUse | `.claude/settings.json` | Reload settings / restart session |
-| Codex | `codex` | PreToolUse, PostToolUse | `.codex/hooks.json` | Review and trust each hook in `/hooks` |
-| Gemini CLI | `gemini` | BeforeTool, AfterTool | `.gemini/settings.json` | Reload settings / restart session |
-| Cursor | `cursor` | beforeShellExecution, beforeReadFile, afterFileEdit | `.cursor/hooks.json` | Workspace must be trusted |
-| Antigravity | — | Git hooks only | — | Use `--provider git` |
+Every provider is installed and removed with the same two commands; `--dry-run` shows the plan first and
+`--scope user` writes to your home directory instead of the repository.
 
+| Provider | `--provider` | Events | File (repo scope) | Remove | Verified |
+|---|---|---|---|---|---|
+| Claude Code | `claude` | PreToolUse, PostToolUse | `.claude/settings.json` | `uninstall --provider claude --all --yes` | Generated handlers run in tests |
+| Codex | `codex` | PreToolUse, PostToolUse | `.codex/hooks.json` | `uninstall --provider codex --all --yes` | Generated handlers run in tests; trust them in `/hooks` |
+| Gemini CLI | `gemini` | BeforeTool, AfterTool | `.gemini/settings.json` | `uninstall --provider gemini --all --yes` | Generated handlers run in tests |
+| Cursor | `cursor` | beforeShellExecution, beforeReadFile, afterFileEdit | `.cursor/hooks.json` | `uninstall --provider cursor --all --yes` | Generated handlers run in tests |
+| OpenCode 1.x | `opencode` | tool.execute.before, tool.execute.after | `.opencode/plugins/reporinse.js` | `uninstall --provider opencode --all --yes` | Written for the 1.19.4 plugin API |
+| DeepSeek Harness | `deepseek` | tools/pre-execute | `.dsh/reporinse.cordis.yml` | `uninstall --provider deepseek --all --yes` | Written for 0.2.1-rc.2 |
+| Antigravity | — | Git hooks only | — | — | No native hooks |
+
+No live session inside Claude, Codex, Gemini or Cursor is claimed yet; hook trust and host timeout behavior
+still need testing in the real apps ([verification notes](docs/development/verification.md)).
 
 ### OpenCode and DeepSeek Harness
 
@@ -457,11 +470,17 @@ reporinse uninstall --provider claude,codex,gemini,cursor --all --yes
   approvals and sandbox.
 - The Claude adapter also sets empty commit/PR attribution strings in its settings (restored on uninstall).
 
-Per-provider details: [Claude](docs/integrations/claude.md) · [Codex](docs/integrations/codex.md) ·
-[Gemini](docs/integrations/gemini.md) · [Cursor](docs/integrations/cursor.md) ·
-[Antigravity](docs/integrations/antigravity.md)
 
 </details>
+
+<!-- kit:agent-links -->
+<p align="center"><a href="docs/research/compatibility-matrix.md"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/agent-links-en-01-dark.svg" /><img src="assets/readme-builder/kit/agent-links-en-01-light.svg" alt="Compatibility matrix" height="44" /></picture></a>&nbsp;
+<a href="docs/integrations/claude.md"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/agent-links-en-02-dark.svg" /><img src="assets/readme-builder/kit/agent-links-en-02-light.svg" alt="Claude" height="34" /></picture></a>&nbsp;
+<a href="docs/integrations/codex.md"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/agent-links-en-03-dark.svg" /><img src="assets/readme-builder/kit/agent-links-en-03-light.svg" alt="Codex" height="34" /></picture></a>&nbsp;
+<a href="docs/integrations/gemini.md"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/agent-links-en-04-dark.svg" /><img src="assets/readme-builder/kit/agent-links-en-04-light.svg" alt="Gemini" height="34" /></picture></a>&nbsp;
+<a href="docs/integrations/cursor.md"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/agent-links-en-05-dark.svg" /><img src="assets/readme-builder/kit/agent-links-en-05-light.svg" alt="Cursor" height="34" /></picture></a>&nbsp;
+<a href="docs/integrations/opencode-deepseek.md"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/agent-links-en-06-dark.svg" /><img src="assets/readme-builder/kit/agent-links-en-06-light.svg" alt="OpenCode · DeepSeek" height="34" /></picture></a></p>
+<!-- /kit:agent-links -->
 
 <p align="center"><img src="assets/readme-builder/kit/wave.svg" alt="" width="100%" /></p>
 
@@ -553,8 +572,14 @@ CI runs on Windows, Linux and macOS. Before contributing, read [AGENTS.md](AGENT
 <a id="-more"></a>
 ## <img src="assets/readme-builder/icons/layers.svg" width="24" height="24" alt="" /> More
 
-[Configuration](docs/configuration/README.md) · [Rules](docs/rules/) · [Integrations](docs/integrations/) ·
-[Security](SECURITY.md) · [Changelog](CHANGELOG.md) · [License (MIT)](LICENSE)
+<!-- kit:more -->
+<p align="center"><a href="docs/configuration/README.md"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/more-en-01-dark.svg" /><img src="assets/readme-builder/kit/more-en-01-light.svg" alt="Configuration" height="34" /></picture></a>&nbsp;
+<a href="docs/rules/"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/more-en-02-dark.svg" /><img src="assets/readme-builder/kit/more-en-02-light.svg" alt="Rules" height="34" /></picture></a>&nbsp;
+<a href="docs/integrations/"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/more-en-03-dark.svg" /><img src="assets/readme-builder/kit/more-en-03-light.svg" alt="Integrations" height="34" /></picture></a>&nbsp;
+<a href="SECURITY.md"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/more-en-04-dark.svg" /><img src="assets/readme-builder/kit/more-en-04-light.svg" alt="Security" height="34" /></picture></a>&nbsp;
+<a href="CHANGELOG.md"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/more-en-05-dark.svg" /><img src="assets/readme-builder/kit/more-en-05-light.svg" alt="Changelog" height="34" /></picture></a>&nbsp;
+<a href="LICENSE"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-builder/kit/more-en-06-dark.svg" /><img src="assets/readme-builder/kit/more-en-06-light.svg" alt="License (MIT)" height="34" /></picture></a></p>
+<!-- /kit:more -->
 
 <br/>
 
