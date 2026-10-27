@@ -47,6 +47,9 @@ pub fn run(
                 || !git
                     .bytes(
                         &[
+                            // Diff's stat refresh must not write before the index transaction.
+                            "-c",
+                            "diff.autoRefreshIndex=false",
                             "diff",
                             "--no-ext-diff",
                             "--no-textconv",

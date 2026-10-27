@@ -31,6 +31,30 @@ fn staged_fix_changes_only_selected_index_entries_and_is_idempotent() {
     assert!(!repo.git_dir().join("index.lock").exists());
 }
 #[test]
+fn dry_run_preserves_index_bytes_after_file_metadata_changes() {
+    let sb = Sandbox::new();
+    let repo = sb.repo("staged metadata");
+    config(&repo);
+    repo.write("a.txt", "needs trim \n");
+    repo.git(&["add", "a.txt"]);
+    let index = std::fs::read(repo.git_dir().join("index")).unwrap();
+    // Force Git to inspect unchanged content instead of trusting its cached stat data.
+    let file = std::fs::OpenOptions::new()
+        .write(true)
+        .open(repo.path("a.txt"))
+        .unwrap();
+    file.set_modified(std::time::SystemTime::now() - std::time::Duration::from_secs(3600))
+        .unwrap();
+    drop(file);
+    assert_code(&repo.reporinse(&["fix", "--staged", "--dry-run"]), 0);
+    assert_eq!(std::fs::read(repo.git_dir().join("index")).unwrap(), index);
+    assert_eq!(
+        std::fs::read_to_string(repo.path("a.txt")).unwrap(),
+        "needs trim \n"
+    );
+    assert!(!repo.git_dir().join("index.lock").exists());
+}
+#[test]
 fn partial_staging_and_index_locks_refuse_without_changes() {
     let sb = Sandbox::new();
     let repo = sb.repo("partial");
