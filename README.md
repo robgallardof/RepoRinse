@@ -19,10 +19,8 @@
 
 </div>
 
-<p align="center"><img src="assets/readme/divider.svg" alt="" width="80%" /></p>
-
 <a id="-why-reporinse"></a>
-<h2 align="center"><img src="assets/readme/sections/en-01.svg" alt="01 · Why RepoRinse" width="100%" /></h2>
+## <img src="assets/readme-builder/icons/layers.svg" width="24" height="24" alt="" /> Why RepoRinse
 
 | | |
 |---|---|
@@ -39,10 +37,8 @@ Co-Authored-By: Claude <noreply@…>   ─▶   Co-Authored-By: Ana <ana@example
 Co-Authored-By: Ana <ana@example.com>
 ```
 
-<p align="center"><img src="assets/readme/divider.svg" alt="" width="80%" /></p>
-
 <a id="-install"></a>
-<h2 align="center"><img src="assets/readme/sections/en-02.svg" alt="02 · Install" width="100%" /></h2>
+## <img src="assets/readme-builder/icons/layers.svg" width="24" height="24" alt="" /> Install
 
 ### Requirements
 
@@ -150,10 +146,8 @@ Details: [docs/DOCKER.md](docs/DOCKER.md).
 Verify the real image and Compose service with `python scripts/test_docker.py`.
 It uses a temporary repository and checks staged files and message fixes without installing host hooks.
 
-<p align="center"><img src="assets/readme/divider.svg" alt="" width="80%" /></p>
-
 <a id="-quick-start-5-minutes"></a>
-<h2 align="center"><img src="assets/readme/sections/en-03.svg" alt="03 · Quick start (5 minutes)" width="100%" /></h2>
+## <img src="assets/readme-builder/icons/rocket.svg" width="24" height="24" alt="" /> Quick start (5 minutes)
 
 Inside any Git repository:
 
@@ -175,10 +169,8 @@ reporinse doctor
 
 From now on, every `git commit` removes known AI co-author trailers from the message and reviews the staged files.
 
-<p align="center"><img src="assets/readme/divider.svg" alt="" width="80%" /></p>
-
 <a id="-rules"></a>
-<h2 align="center"><img src="assets/readme/sections/en-04.svg" alt="04 · Rules" width="100%" /></h2>
+## <img src="assets/readme-builder/icons/layers.svg" width="24" height="24" alt="" /> Rules
 
 | Rule | Default | What it does |
 |---|:---:|---|
@@ -210,10 +202,8 @@ reporinse rule explain text.whitespace        # full documentation with examples
 
 Docs for each rule live in [`docs/rules/`](docs/rules/).
 
-<p align="center"><img src="assets/readme/divider.svg" alt="" width="80%" /></p>
-
 <a id="-checking"></a>
-<h2 align="center"><img src="assets/readme/sections/en-05.svg" alt="05 · Checking" width="100%" /></h2>
+## <img src="assets/readme-builder/icons/layers.svg" width="24" height="24" alt="" /> Checking
 
 `check` **never writes**. Pick one input:
 
@@ -236,10 +226,8 @@ Useful global flags: `--json` (machine-readable), `--quiet` (only blocking findi
 | `3` | Configuration error |
 | `4` | Conflict (e.g. a file changed since analysis, `core.hooksPath` set globally) |
 
-<p align="center"><img src="assets/readme/divider.svg" alt="" width="80%" /></p>
-
 <a id="-fixing"></a>
-<h2 align="center"><img src="assets/readme/sections/en-06.svg" alt="06 · Fixing" width="100%" /></h2>
+## <img src="assets/readme-builder/icons/layers.svg" width="24" height="24" alt="" /> Fixing
 
 Fixes only run for rules you explicitly set to `mode = "fix"` (`git.ai-attribution` is `fix` by default).
 
@@ -279,10 +267,8 @@ reporinse fix --message .git/COMMIT_EDITMSG   # clean a commit message file in p
 
 </details>
 
-<p align="center"><img src="assets/readme/divider.svg" alt="" width="80%" /></p>
-
 <a id="-git-hooks"></a>
-<h2 align="center"><img src="assets/readme/sections/en-07.svg" alt="07 · Git hooks" width="100%" /></h2>
+## <img src="assets/readme-builder/icons/layers.svg" width="24" height="24" alt="" /> Git hooks
 
 ### What gets installed
 
@@ -362,10 +348,8 @@ Full details: [docs/integrations/git.md](docs/integrations/git.md).
 
 </details>
 
-<p align="center"><img src="assets/readme/divider.svg" alt="" width="80%" /></p>
-
 <a id="-agent-hooks-claude-codex-gemini-cursor"></a>
-<h2 align="center"><img src="assets/readme/sections/en-08.svg" alt="08 · Agent hooks (Claude, Codex, Gemini, Cursor)" width="100%" /></h2>
+## <img src="assets/readme-builder/icons/bot.svg" width="24" height="24" alt="" /> Agent hooks (Claude, Codex, Gemini, Cursor)
 
 RepoRinse can plug into the native hook systems of coding agents to **warn about or block** commands and file
 paths you list in your policy.
@@ -379,7 +363,6 @@ paths you list in your policy.
 | Gemini CLI | `gemini` | BeforeTool, AfterTool | `.gemini/settings.json` | Reload settings / restart session |
 | Cursor | `cursor` | beforeShellExecution, beforeReadFile, afterFileEdit | `.cursor/hooks.json` | Workspace must be trusted |
 | Antigravity | — | Git hooks only | — | Use `--provider git` |
-
 
 
 ### OpenCode and DeepSeek Harness
@@ -466,10 +449,8 @@ Per-provider details: [Claude](docs/integrations/claude.md) · [Codex](docs/inte
 
 </details>
 
-<p align="center"><img src="assets/readme/divider.svg" alt="" width="80%" /></p>
-
 <a id="-configuration"></a>
-<h2 align="center"><img src="assets/readme/sections/en-09.svg" alt="09 · Configuration" width="100%" /></h2>
+## <img src="assets/readme-builder/icons/layers.svg" width="24" height="24" alt="" /> Configuration
 
 `reporinse init` creates `.reporinse.toml` at the repository root. Presets: `minimal`, `balanced` (default),
 `strict`, `custom`.
@@ -519,10 +500,8 @@ reporinse config explain      # every effective value and where it came from
 
 Full reference: [docs/configuration/README.md](docs/configuration/README.md).
 
-<p align="center"><img src="assets/readme/divider.svg" alt="" width="80%" /></p>
-
 <a id="-troubleshooting"></a>
-<h2 align="center"><img src="assets/readme/sections/en-10.svg" alt="10 · Troubleshooting" width="100%" /></h2>
+## <img src="assets/readme-builder/icons/layers.svg" width="24" height="24" alt="" /> Troubleshooting
 
 | Symptom | What to do |
 |---|---|
@@ -533,10 +512,8 @@ Full reference: [docs/configuration/README.md](docs/configuration/README.md).
 | Unsure what a rule did | `reporinse rule explain <id>` or `reporinse check --verbose` |
 | Need it in CI / scripts | Add `--json` and use the exit codes |
 
-<p align="center"><img src="assets/readme/divider.svg" alt="" width="80%" /></p>
-
 <a id="-development"></a>
-<h2 align="center"><img src="assets/readme/sections/en-11.svg" alt="11 · Development" width="100%" /></h2>
+## <img src="assets/readme-builder/icons/code.svg" width="24" height="24" alt="" /> Development
 
 ```sh
 cargo build
@@ -552,7 +529,7 @@ CI runs on Windows, Linux and macOS. Before contributing, read [AGENTS.md](AGENT
 [docs/development/verification.md](docs/development/verification.md).
 
 <a id="-more"></a>
-<h2 align="center"><img src="assets/readme/sections/en-12.svg" alt="12 · More" width="100%" /></h2>
+## <img src="assets/readme-builder/icons/layers.svg" width="24" height="24" alt="" /> More
 
 [Configuration](docs/configuration/README.md) · [Rules](docs/rules/) · [Integrations](docs/integrations/) ·
 [Security](SECURITY.md) · [Changelog](CHANGELOG.md) · [License (MIT)](LICENSE)
@@ -562,5 +539,5 @@ CI runs on Windows, Linux and macOS. Before contributing, read [AGENTS.md](AGENT
 <p align="center"><a href="#top">Back to top</a></p>
 
 <!-- readme-builder:signature:start -->
-<p align="center"><a href="https://github.com/robgallardof"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme/brand/signature-en-dark.svg" /><img src="assets/readme/brand/signature-en-light.svg" alt="RepoRinse / Roberto Gallardo" width="100%" /></picture></a></p>
+<p align="center"><a href="https://github.com/robgallardof"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme/brand/signature-en-dark.svg" /><img src="assets/readme/brand/signature-en-light.svg" alt="RepoRinse / Roberto Gallardo" width="360" /></picture></a></p>
 <!-- readme-builder:signature:end -->
